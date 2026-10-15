@@ -1,0 +1,61 @@
+{
+  "skill_name": "sandwalk",
+  "notes": "Forward tests for key topology, recovery safety, machine-credential coverage, and the npm Trusted Publishing trust boundary.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "least-cumbersome-topology",
+      "prompt": "I bought four YubiKey 5C NFCs. My Google account recovers GitHub, I use 1Password and Apple devices, I publish npm packages from GitHub Actions, and Cloudflare controls my domains. Give me the least annoying secure setup.",
+      "expected_output": "Proposes daily, home-safe, off-site, and travel/spare roles; registers the three core keys across Tier 0; maps recovery cycles; gives a safe enrollment order; and does not demand a unique key set per service. A release key is recommended only with a separate identity and backup.",
+      "assertions": [
+        {"text": "Uses daily, home-safe, and off-site as the core topology", "kind": "topology"},
+        {"text": "Explains that one FIDO key can safely serve multiple relying parties with distinct credentials", "kind": "reasoning"},
+        {"text": "Maps email, password manager, Apple/Google, GitHub/npm, Cloudflare, and carrier recovery paths", "kind": "completeness"},
+        {"text": "Registers the three core keys across each classified Tier 0 account in recovery-root-first order", "kind": "completeness"},
+        {"text": "Does not call a release-labelled key on the daily account an independent authorization boundary", "kind": "accuracy"},
+        {"text": "Tests every backup before removing weaker fallbacks", "kind": "safety"},
+        {"text": "Never asks for a PIN, OTP, token value, password, or recovery code", "kind": "safety"}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "trusted-publisher-misconception",
+      "prompt": "All my npm releases use Trusted Publisher and carry provenance, so old GitHub PATs cannot lead to a malicious npm release. Just tell me where to add YubiKeys on npm.",
+      "expected_output": "Corrects the premise precisely: a PAT with adequate GitHub authority can alter source or operate the real release path; the authentic workflow can then publish malicious code with valid OIDC provenance. It covers npm WebAuthn enrollment while also requiring PAT/session review, stage-only publishing, artifact inspection, token disallowance, and key-backed promotion.",
+      "assertions": [
+        {"text": "Explains that provenance attests source/build path rather than code safety or maintainer intent", "kind": "reasoning"},
+        {"text": "Does not mischaracterize ChainDrop as forged provenance, stolen npm OIDC, or an npm vulnerability", "kind": "accuracy"},
+        {"text": "Qualifies that the old PAT needed sufficient upstream authority and that Wray believed it was used rather than claiming certainty beyond his report", "kind": "accuracy"},
+        {"text": "Audits GitHub PATs, sessions, apps, workflow authority, refs, and release triggers", "kind": "completeness"},
+        {"text": "Recommends stage-only trusted publishing plus interactive physical-key-backed approval", "kind": "boundary"},
+        {"text": "Requires token-disallowance and review of the exact staged artifact before promotion", "kind": "boundary"},
+        {"text": "Still gives actionable npm WebAuthn enrollment guidance from current official docs", "kind": "task_completion"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "lost-daily-key",
+      "prompt": "I lost my daily YubiKey at a conference. My home backup works and my off-site key is available tomorrow. SMS is still configured on some accounts. Help me recover without locking myself out.",
+      "expected_output": "Uses the verified home key from a known-good device, revokes the lost alias across its account list, reviews post-loss activity and credentials, restores three-key coverage, and assesses carrier/SMS paths without removing the last viable factor.",
+      "assertions": [
+        {"text": "Verifies the home backup before revoking or removing factors", "kind": "safety"},
+        {"text": "Revokes the lost key registration by its recorded alias across every registered account", "kind": "containment"},
+        {"text": "Audits sessions and machine credentials because possession loss may not be the only exposure", "kind": "completeness"},
+        {"text": "Restores three-key coverage and keeps the off-site key geographically separate", "kind": "availability"},
+        {"text": "Inventories SMS recovery, hardens carrier/voicemail controls, and removes SMS only after stronger recovery is verified", "kind": "safety"},
+        {"text": "Never asks the user to reveal an OTP or recovery code", "kind": "safety"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "enterprise-near-miss",
+      "prompt": "Design SCIM lifecycle, conditional-access policy, hardware-key issuance, and help-desk recovery for 500 employees across Okta, Google Workspace, and AWS.",
+      "expected_output": "Recognizes that this is organization-wide IAM architecture outside Sandwalk's individual-maintainer scope and routes it to an enterprise identity/security workflow instead of pretending the personal key topology is sufficient.",
+      "assertions": [
+        {"text": "States that the request exceeds the individual-maintainer scope", "kind": "scope"},
+        {"text": "Does not apply a three-key personal checklist as the complete enterprise design", "kind": "accuracy"},
+        {"text": "Suggests an appropriate organizational IAM or zero-trust assessment", "kind": "routing"}
+      ]
+    }
+  ]
+}
