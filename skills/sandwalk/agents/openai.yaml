@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sandwalk"
+  short_description: "Harden a maintainer identity with security keys"
+  brand_color: "#C87A2B"
+  default_prompt: "Use $sandwalk to design a practical physical-security-key rollout for my maintainer accounts and release paths."
