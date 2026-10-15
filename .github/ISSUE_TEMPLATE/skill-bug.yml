@@ -1,0 +1,80 @@
+name: Skill bug
+description: A skill gave a wrong, incomplete, or unhelpful result. If the skill broke a must-not-happen rule, use the "Safety-gate violation" form.
+title: "<skill>: <what happened>"
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write in Simplified Technical English. Keep each sentence under 20 words. Use the active voice. Do not use "should", "would", "may", "might", or "could".
+
+        Write the title as `skill: what happened`. Use lowercase after the colon. Do not end the title with a period.
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - wt-prune
+        - ste-squash
+        - ste-seal
+        - sandwalk
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      description: The agent that ran the skill.
+      options:
+        - Claude Code
+        - Codex
+        - Cursor
+        - Gemini CLI
+        - OpenCode
+        - other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill commit
+      description: The commit hash of the skill file that the agent loaded.
+      placeholder: cf296e6
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt
+      description: Paste the exact text that invoked the skill. Remove secrets and private paths before you paste.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What the skill did
+      description: Quote the agent output. Do not describe the output from memory.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What the skill must do
+      description: Name the step or rule in SKILL.md that the skill did not obey.
+    validations:
+      required: true
+  - type: textarea
+    id: state
+    attributes:
+      label: Repository or account state
+      description: Give the facts that the skill depended on, for example the branch layout, the PR state, or the account setup. Give no secret values.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: This report contains no password, token, PIN, OTP, recovery code, or private file path.
+          required: true
+        - label: The skill did not break a must-not-happen rule. For a broken rule, I use the "Safety-gate violation" form.
+          required: true

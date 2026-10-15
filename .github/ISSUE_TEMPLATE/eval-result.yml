@@ -1,0 +1,118 @@
+name: Eval result or regression
+description: Report one eval run for a skill. An agent can file this form after a run.
+title: "<skill>: eval <id> <pass or fail>"
+labels: [eval]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write in Simplified Technical English. Keep each sentence under 20 words. Use the active voice. Do not use "should", "would", "may", "might", or "could".
+
+        Write the title as `skill: eval id pass` or `skill: eval id fail`. Use lowercase after the colon. Do not end the title with a period.
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - wt-prune
+        - ste-squash
+        - ste-seal
+        - sandwalk
+        - other
+    validations:
+      required: true
+  - type: input
+    id: eval-id
+    attributes:
+      label: Eval id and name
+      description: Give the id and the name from evals.json.
+      placeholder: 1 squash-merged-is-safe
+    validations:
+      required: true
+  - type: dropdown
+    id: arm
+    attributes:
+      label: Arm
+      options:
+        - with_skill
+        - baseline_no_skill
+        - other
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Agent and model
+      placeholder: Claude Code, claude-fable-5-1
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill commit
+      description: The commit hash of the skill file that the agent loaded.
+      placeholder: cf296e6
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - pass
+        - fail
+        - partial
+        - skipped
+    validations:
+      required: true
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Regression
+      description: A regression is a fail on an eval that passed on an earlier commit.
+      options:
+        - New regression
+        - Known failure
+        - Not a regression
+    validations:
+      required: true
+  - type: textarea
+    id: verdict
+    attributes:
+      label: Verdict and ground truth
+      description: Give the verdict that the agent reached and the verdict that evals.json expects.
+      placeholder: |
+        Reached: SAFE
+        Expected: BLOCKED
+    validations:
+      required: true
+  - type: textarea
+    id: assertions
+    attributes:
+      label: Assertions that failed
+      description: Quote each failed assertion from evals.json. Write "none" if all passed.
+    validations:
+      required: true
+  - type: input
+    id: tokens
+    attributes:
+      label: Tokens
+      placeholder: "44073"
+  - type: input
+    id: duration
+    attributes:
+      label: Wall time in milliseconds
+      placeholder: "137363"
+  - type: input
+    id: ran-at
+    attributes:
+      label: Date of the run
+      description: Give the date in the form YYYY-MM-DD.
+      placeholder: 2026-10-15
+    validations:
+      required: true
+  - type: textarea
+    id: defect
+    attributes:
+      label: Defect found
+      description: If the run found a defect in the skill or its script, state it here. Give the file and line.

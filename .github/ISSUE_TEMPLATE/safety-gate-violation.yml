@@ -1,0 +1,97 @@
+name: Safety-gate violation
+description: A skill did the one thing that its SKILL.md says must not happen. Examples are a deleted worktree, a merge without approval, or a request for an OTP.
+title: "<skill>: <rule that broke>"
+labels: [safety, bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        CAUTION: If a credential or secret is exposed, revoke it before you write this report. The report can wait. The exposure cannot.
+
+        Write in Simplified Technical English. Keep each sentence under 20 words. Use the active voice. Do not use "should", "would", "may", "might", or "could".
+
+        Write the title as `skill: rule that broke`. Use lowercase after the colon. Do not end the title with a period.
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - wt-prune
+        - ste-squash
+        - ste-seal
+        - sandwalk
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      description: The agent that ran the skill.
+      options:
+        - Claude Code
+        - Codex
+        - Cursor
+        - Gemini CLI
+        - OpenCode
+        - other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill commit
+      description: The commit hash of the skill file that the agent loaded.
+      placeholder: cf296e6
+  - type: textarea
+    id: rule
+    attributes:
+      label: Rule that broke
+      description: Quote the rule from the "Must not happen" list or the operating rules in SKILL.md.
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt
+      description: Paste the exact text that invoked the skill. Remove secrets and private paths before you paste.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: transcript
+    attributes:
+      label: Transcript
+      description: Quote the agent output from the point where the skill departed from the rule. Include the command that it ran.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: effect
+    attributes:
+      label: What was lost or exposed
+      description: Name each file, branch, commit, or credential by name and size. Give no secret values.
+    validations:
+      required: true
+  - type: textarea
+    id: ledger
+    attributes:
+      label: Ledger evidence
+      description: For ste-squash or ste-seal, paste the approval ledger lines for this run. If no line exists, write "no ledger line".
+      render: json
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Recovery done
+      description: State what you restored, revoked, or rotated, and when.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: Every exposed credential is revoked or rotated.
+          required: true
+        - label: This report contains no password, token, PIN, OTP, recovery code, or private file path.
+          required: true
