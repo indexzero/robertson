@@ -1,0 +1,83 @@
+name: Propose a skill
+description: Propose a new skill for this repository. A proposal needs a reader, a problem, a must-not-happen list, and evals.
+title: "<skill-name>: <what it does>"
+labels: [skill-proposal, enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write in Simplified Technical English. Keep each sentence under 20 words. Use the active voice. Do not use "should", "would", "may", "might", or "could".
+
+        Write the title as `skill-name: what it does`. Use lowercase after the colon. Do not end the title with a period.
+  - type: input
+    id: name
+    attributes:
+      label: Skill name
+      description: Use lowercase letters and hyphens only.
+      placeholder: wt-prune
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: One sentence
+      description: Write "X is a skill that Z". Give the category and the one property that makes it different. Give no adjectives.
+      placeholder: wt-prune is a skill that proves which git worktrees are safe to delete and deletes none of them.
+    validations:
+      required: true
+  - type: textarea
+    id: reader
+    attributes:
+      label: Who it is for
+      description: Name the person and the moment. For example, "a maintainer with 80 worktrees who wants the disk back".
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: State what goes wrong today without the skill. State the problem before the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: must-not
+    attributes:
+      label: Must-not-happen list
+      description: List each action that the skill must never take, one per line. Every skill in this repository has this list.
+      placeholder: |
+        - Remove a worktree, a branch, or a ref.
+        - Print the contents of a credential file.
+    validations:
+      required: true
+  - type: textarea
+    id: evals
+    attributes:
+      label: Evals
+      description: Give at least two cases. For each case, give the prompt and the expected verdict. One case must test a must-not-happen rule.
+    validations:
+      required: true
+  - type: checkboxes
+    id: agents
+    attributes:
+      label: Target agents
+      options:
+        - label: Claude Code
+        - label: Codex
+        - label: Cursor
+        - label: Gemini CLI
+        - label: OpenCode
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Name the tools or skills that solve part of this problem today. State why they are not enough.
+  - type: dropdown
+    id: author
+    attributes:
+      label: Who writes it
+      options:
+        - I will write the skill
+        - I want a maintainer to write it
+        - I want to write it with a maintainer
+    validations:
+      required: true

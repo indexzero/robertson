@@ -1,0 +1,72 @@
+name: Stale fact or drift
+description: A dated claim in a skill no longer matches the provider, the tool, or the documentation that it cites.
+title: "<skill>: <claim that is stale>"
+labels: [stale-fact, documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write in Simplified Technical English. Keep each sentence under 20 words. Use the active voice. Do not use "should", "would", "may", "might", or "could".
+
+        Write the title as `skill: claim that is stale`. Use lowercase after the colon. Do not end the title with a period.
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - wt-prune
+        - ste-squash
+        - ste-seal
+        - sandwalk
+        - other
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: File and line
+      description: Give the path and the line number of the claim.
+      placeholder: skills/sandwalk/references/provider-baselines.md:26
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim as written
+      description: Quote the sentence from the skill. Do not paraphrase it.
+    validations:
+      required: true
+  - type: textarea
+    id: fact
+    attributes:
+      label: Current fact
+      description: State what is true now. Give one fact per sentence.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Give the URL of the first-party documentation that shows the current fact.
+      placeholder: https://support.apple.com/en-us/102637
+    validations:
+      required: true
+  - type: input
+    id: checked
+    attributes:
+      label: Date checked
+      description: Give the date in the form YYYY-MM-DD.
+      placeholder: 2026-10-15
+    validations:
+      required: true
+  - type: dropdown
+    id: effect
+    attributes:
+      label: Effect on the skill
+      options:
+        - The skill gives a wrong instruction
+        - The skill blocks a correct action
+        - The skill gives a wrong limit or number
+        - The text is wrong but the behavior is correct
+    validations:
+      required: true
