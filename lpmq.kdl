@@ -1,0 +1,26 @@
+stage 0 status="Idea. Not built." purpose="Refine the idea."
+stage 1 status="Designed. Not built." purpose="Plan the build." {
+  criterion "A sound approach, stack, and architecture, written as a PROMPT.md or an orckit."
+
+  slot "sandwalk" path="skills/sandwalk"
+}
+stage 2 status="Tried. Nothing depends on it." purpose="Build it one time and see." {
+  criterion "An agent can build it unattended."
+  criterion "A machine can check Done."
+}
+stage 3 status="Used. The design can change." purpose="Learn from use." {
+  criterion "The build passes its Done."
+  criterion "I use it like my skunkworks."
+
+  slot "ste-seal" path="skills/ste-seal"
+  slot "ste-squash" path="skills/ste-squash"
+}
+stage 4 status="Relied on." purpose="Grow it with care." {
+  criterion "It has dependents, mostly me."
+  criterion "I use it regularly."
+
+  slot "wt-prune" path="skills/wt-prune"
+}
+stage 5 status="Stable." purpose="Maintain it." {
+  criterion "Version 1.0.0 in semver."
+}
