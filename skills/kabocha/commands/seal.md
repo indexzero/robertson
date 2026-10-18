@@ -53,6 +53,10 @@ Record this table before changing any ref:
 | PR | Head repository and branch | Old head | Immediate base | Old boundary | Original tree |
 |---|---|---|---|---|---|
 
+Take object IDs from `git rev-parse` output captured in this run. Use
+those values for the plan, backup refs, leases, and ledger. Never expand
+an abbreviated hash by hand.
+
 For a PR based on the default branch, use its unique merge-base with the
 fetched base as `old_boundary`. For a stacked PR, require the pinned parent
 head to be an ancestor of the child, and use that exact old parent head as
@@ -73,6 +77,10 @@ Draft each message with [message-style.md](../references/message-style.md)
 from the PR diff against its pinned boundary. When the PR already has an
 approved message in the ledger, reuse it if its bytes still match.
 
+Remove every `(#N)` suffix from a sealed subject, including this PR's
+own number. The later squash merge supplies that suffix. An explicit
+`squash --subject` has a different contract.
+
 Show the complete plan in one batch for each scope:
 
 - the PRs and branches, ordered from root to leaf
@@ -91,7 +99,7 @@ plan.
 
 ## 3. Squash and restack locally
 
-Create a backup ref for every old head under `refs/kabocha/<run>/` before
+Create a backup ref for every old head at `refs/kabocha/<run>/<pr>` before
 the first rewrite. Do not delete or push them during this operation.
 
 Work from root to leaf, in each branch's existing clean worktree. Never
@@ -122,6 +130,7 @@ Before any push, prove for each PR:
 - `git rev-list --count "$boundary..HEAD"` returns `1`
 - the PR diff against the new boundary equals the original PR diff
 - the message bytes match the approved SHA256 (read the raw commit object)
+- the subject has no PR-number suffix
 - the worktree and index are clean
 
 ## 4. Push, verify, and leave open
@@ -129,6 +138,7 @@ Before any push, prove for each PR:
 Push one branch at a time, root to leaf, with the exact old remote head in
 the lease and an explicit refspec:
 
+    old_head=$(git rev-parse "refs/kabocha/$run/$pr")
     git push --force-with-lease="refs/heads/$branch:$old_head" \
       "$push_remote" "refs/heads/$branch:refs/heads/$branch"
 
