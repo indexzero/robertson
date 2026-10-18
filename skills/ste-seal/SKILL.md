@@ -46,6 +46,11 @@ Record this table before changing any ref:
 | PR | Head repository and branch | Old head | Immediate base | Old boundary | Original tree |
 |---|---|---|---|---|---|
 
+Take every object ID from `git rev-parse` output captured in this session,
+or from a variable that holds that output. This applies to the table, backup
+refs, leases, and ledger entries. Never type an ID from memory. Never expand
+an abbreviated hash by hand.
+
 For a PR based on the default branch, use its unique merge-base with the
 fetched base as `old_boundary`. Base advancement alone is not a reason to
 include unrelated upstream commits in this squash.
@@ -73,8 +78,10 @@ Use `ste-squash` conventions:
 - Title: `area: what changed`, lowercase after the colon, with no final period.
 - Aim for about 50 characters. Keep the title under roughly 65 characters when practical.
 - Name the subsystem, not the repository. Use a plain change verb.
-- Remove planning-section markers and unrelated `(#N)` suffixes.
-- Append this PR's own `(#N)` only when the repository convention requires it.
+- Remove planning-section markers and every `(#N)` suffix, including this PR's own.
+- Never append this PR's own `(#N)`. The later squash merge appends it, so a sealed `(#N)` doubles.
+- A history with `(#N)` on every subject shows a merge-time suffix, not a branch convention.
+- `ste-squash` differs. It merges with an explicit `--subject`, so it owns the final title.
 - Separate title and body with a blank line. Wrap body text near 72 columns.
 - Use two to six short sentences. One sentence can suffice for a simple change.
 - Keep sentences under 20 words. Use active voice, simple tenses, and one fact per sentence.
@@ -193,6 +200,7 @@ Before any push, prove for each selected PR:
 - `git rev-list --count "$squash_boundary..HEAD"` returns `1`.
 - Its PR diff against the new boundary equals the original PR diff.
 - Its message bytes match the approved SHA256.
+- Its title does not end with this PR's own `(#N)`.
 - Its working tree and index are clean.
 
 Use the raw commit object to read message bytes after the header's blank
@@ -207,9 +215,11 @@ Record new heads and proof results before touching any remote ref.
 
 Push one branch at a time, root to leaves. Verify the PR still targets the
 same base branch and that the destination is the recorded head repository.
-Use the exact old remote head in the lease and an explicit branch refspec:
+Use the exact old remote head in the lease and an explicit branch refspec.
+Read the old head from the backup ref into a variable:
 
 ```sh
+old_head=$(git rev-parse "refs/ste-seal/$run_id/$pr")
 git push --force-with-lease="refs/heads/$branch:$old_head" \
   "$push_remote" "refs/heads/$branch:refs/heads/$branch"
 ```
@@ -222,10 +232,13 @@ unchanged PR base. Append the outcome immediately:
 {"event":"pushed","repo":"owner/name","pr":42,"old_head":"...","new_head":"...","message_sha256":"...","matches_approval":true,"tree_unchanged":true,"at":"ISO8601"}
 ```
 
-If a lease fails, stop. Do not retry with a fresh lease or overwrite the
-concurrent work. If an earlier push succeeded, record the partial batch and
-identify the descendants still awaiting repair. Never roll back remote refs
-or merge a partial stack automatically.
+If a lease fails, read the remote head with `git ls-remote` and compare it
+with `old_head`. If they are equal, the lease value was wrong. Correct it from
+`git rev-parse` and retry once. If they differ, stop. Do not take a fresh
+lease from the new remote head or overwrite the concurrent work.
+If an earlier push succeeded, record the partial batch and identify the
+descendants still awaiting repair. Never roll back remote refs or merge a
+partial stack automatically.
 
 Verify the final stack edges and one-commit counts after all pushes.
 Wait for required CI on the new heads. Old green checks do not cover new
