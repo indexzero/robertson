@@ -232,13 +232,10 @@ unchanged PR base. Append the outcome immediately:
 {"event":"pushed","repo":"owner/name","pr":42,"old_head":"...","new_head":"...","message_sha256":"...","matches_approval":true,"tree_unchanged":true,"at":"ISO8601"}
 ```
 
-If a lease fails, read the remote head with `git ls-remote` and compare it
-with `old_head`. If they are equal, the lease value was wrong. Correct it from
-`git rev-parse` and retry once. If they differ, stop. Do not take a fresh
-lease from the new remote head or overwrite the concurrent work.
-If an earlier push succeeded, record the partial batch and identify the
-descendants still awaiting repair. Never roll back remote refs or merge a
-partial stack automatically.
+If a lease fails, stop. Do not retry with a fresh lease or overwrite the
+concurrent work. If an earlier push succeeded, record the partial batch and
+identify the descendants still awaiting repair. Never roll back remote refs
+or merge a partial stack automatically.
 
 Verify the final stack edges and one-commit counts after all pushes.
 Wait for required CI on the new heads. Old green checks do not cover new
