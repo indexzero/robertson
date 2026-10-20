@@ -45,7 +45,9 @@ GitHub builds the message as follows. Each point was observed on a real
 merge.
 
 1. The subject is the PR title plus ` (#N)`.
-2. The body is the PR description. GitHub removes the final newline.
+2. The body is the PR description. GitHub removes the final newline and
+   the leading whitespace of the first line, so a description cannot open
+   with an indented block. Put a sentence or a blank-safe line first.
 3. GitHub collects the `Co-authored-by:` trailers from the squashed branch
    commits. It appends a line of nine hyphens and those trailers as a new
    last paragraph. It keeps one trailer for each email address, with the
