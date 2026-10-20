@@ -1,0 +1,6 @@
+# .vlurpfile: remote text that kabocha reads. Run from skills/kabocha:
+#   mkdir -p references/of-structure && vlurp batch .vlurpfile && vlurp verify ./references/of-structure
+#
+# The Elements of Documentation: the rules for subjects and bodies that
+# kabocha cites by number. Pinned to indexzero/of-structure main.
+vlurp 'pkg:github/indexzero/of-structure@d158c8c#skills/elements-of-documentation/bundle/the-elements-of-documentation.md' ./references/of-structure/
