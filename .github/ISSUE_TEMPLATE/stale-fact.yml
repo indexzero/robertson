@@ -15,8 +15,7 @@ body:
       label: Skill
       options:
         - wt-prune
-        - ste-squash
-        - ste-seal
+        - kabocha
         - sandwalk
         - other
     validations:
