@@ -17,8 +17,7 @@ body:
       label: Skill
       options:
         - wt-prune
-        - ste-squash
-        - ste-seal
+        - kabocha
         - sandwalk
         - other
     validations:
@@ -77,7 +76,7 @@ body:
     id: ledger
     attributes:
       label: Ledger evidence
-      description: For ste-squash or ste-seal, paste the approval ledger lines for this run. If no line exists, write "no ledger line".
+      description: For kabocha, paste the ledger lines for this run. If no line exists, write "no ledger line".
       render: json
   - type: textarea
     id: recovery
