@@ -73,10 +73,11 @@ These hold at every tier and in every command.
    command. `squash` merges one PR, and only when the operator names it.
 3. Every message follows [references/message-style.md](references/message-style.md):
    the subject `Update <exact path of the most salient file> to <behavior>`,
-   then a fenced usage block that opens the description with nothing
-   indented, then one value line (`That behavior enables|allows|unblocks
-   <outcome>`), then the PR's closing keyword, then the attribution block.
-   Say what it does, then why that is valuable. Do not dwell on failures.
+   then the problem from the PR's "Why", then the three to ten source lines
+   (or the real user-facing invocation) that carry the change, then one
+   value line (`That <noun> enables|allows|unblocks <outcome>`), then the
+   closing keyword, then the attribution block. A test or lint command is
+   never the code.
 4. Before the ready report, predict the squash commit that GitHub will make
    from each PR. Compare it to the approved bytes. Correct what the
    description controls. Report the rest. See
