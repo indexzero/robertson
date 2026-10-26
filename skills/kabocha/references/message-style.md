@@ -22,9 +22,14 @@ The PR title is the subject. The PR description is everything below it:
 ````text
 Update exact/path/to/most/salient/change.ext to behave in this way
 
-```
-SPECIFIC_USAGE_IS=true exact/path/to/most/salient/change.ext
-exact/path/to/most/salient/change.ext SPECIFIC=VALUE
+The problem, from the PR's long-form "Why": what was wrong or missing,
+named concretely, with the functions, flags, and issue numbers it
+involves.
+
+One sentence that names what replaces it:
+
+```ts
+the three to ten source lines that carry the change
 ```
 
 That behavior enables a pragmatic outcome that has obvious value.
@@ -36,8 +41,10 @@ Closes #N
 Assisted-by: <model display name>, claude-code@<version>
 ````
 
-Say what it does, then why that is valuable. Do not dwell on failures or
-history.
+Lead with the problem the PR body already explains (Rule 6). It is the
+part that evaporates when the PR closes. Then show the code that solves
+it, then say why that is valuable. Do not dwell on review history or CI
+failures.
 
 ## Subject
 
@@ -52,16 +59,23 @@ history.
 - A subject that needs "and" for two claims is a mixed-scope signal. Write
   the subject anyway and log the signal (SKILL.md invariant 9).
 
-## Usage block
+## Code block
 
-- One to three lines that exercise the change: a command, an environment
-  variable with the command, or a route the app serves (Rule 12).
-- Put the lines in a fenced code block that opens the description. Indent
-  nothing. GitHub strips the leading whitespace of the description's first
-  line in the squash commit, so an indented first line loses its indent.
-- Verify each line against the repository at the PR head: a package.json
-  script, a bin, a CLI command and its flags, or a route. Never invent a
-  flag. Prefer a line you ran.
+- Three to ten lines that carry the change. Two kinds qualify:
+  - Real source lines from the PR head: the function, the rule, or the
+    table that replaced the old behavior.
+  - For a user-facing change, a real invocation: a command typed at the
+    product's prompt, a route, or a CLI the repository ships, with its
+    output when the output is the point.
+- A test runner, a type check, or a lint of the code itself is never the
+  block. `pnpm --filter x test`, `node --test`, and `tsc` say nothing about
+  what changed.
+- Copy source lines exactly. Wrap a line longer than 72 columns at a
+  natural break. Mark an elision with `...`, and only inside a line.
+- Use a fenced block with the file's language. The description opens
+  with the problem paragraph, so the fence never sits on the first line.
+  GitHub strips the leading whitespace of the description's first line.
+- Verify every line against the PR head (`git grep -F`).
 
 ## Value line
 
@@ -104,8 +118,9 @@ Check each draft before you show it:
 
 1. The subject starts with `Update `, names a path, contains ` to `, and
    is 72 columns or fewer.
-2. The description opens with a fenced usage block, and no line in the
-   description starts with whitespace.
+2. The description opens with the problem paragraph. A fenced block of
+   3 to 10 verified lines follows, with no test runner or type check in
+   it. No line outside the fence starts with whitespace.
 3. Every line is 72 columns or fewer.
 4. The value line uses `enables`, `allows`, or `unblocks`.
 5. The PR's closing keyword is present.
