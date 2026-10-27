@@ -1,5 +1,8 @@
-# .vlurpfile: remote text that kabocha reads. Run from skills/kabocha:
-#   mkdir -p references/of-structure && vlurp batch .vlurpfile && vlurp verify ./references/of-structure
+# .vlurpfile: remote text that kabocha reads. Paths resolve from this file's
+# directory (vlurp >= 2.2.0), so run it from anywhere, e.g. the repository root:
+#   vlurp ./skills/kabocha/.vlurpfile && vlurp verify ./skills/kabocha/references/of-structure
+# Or restore exactly the bytes the committed lineage pins, checking every sha256:
+#   vlurp ./skills/kabocha/references/of-structure/.vlurp.jsonl
 #
 # The Elements of Documentation: the rules for subjects and bodies that
 # kabocha cites by number. Pinned to indexzero/of-structure main.
