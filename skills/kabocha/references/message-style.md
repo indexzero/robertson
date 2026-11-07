@@ -20,7 +20,7 @@ its reason or its example.
 The PR title is the subject. The PR description is everything below it:
 
 ````text
-Update exact/path/to/most/salient/change.ext to behave in this way
+exact/path/to/most/salient/change.ext: describe the new behavior
 
 The problem, from the PR's long-form "Why": what was wrong or missing,
 named concretely, with the functions, flags, and issue numbers it
@@ -48,9 +48,10 @@ failures.
 
 ## Subject
 
-- One imperative sentence: `Update`, the exact repository path of the
-  single most salient file, then `to` and the behavior that file now has
-  (Rules 1 to 4). Name the behavior, not the mechanism.
+- Use Rob Pike style: the exact repository path of the single most
+  salient file, a colon and a space, then an imperative phrase naming the
+  new behavior (Rules 1 to 4). Start the phrase with a lowercase verb.
+  Name the behavior directly. Do not add an `Update` prefix.
 - The most salient file is the one whose new behavior is the point of the
   PR. It is usually not a test, a fixture, a lockfile, or a doc.
 - No final period, no parenthetical, no PR number. GitHub appends `(#N)`.
@@ -116,8 +117,9 @@ Assisted-by: <model display name>, claude-code@<version>
 
 Check each draft before you show it:
 
-1. The subject starts with `Update `, names a path, contains ` to `, and
-   is 72 columns or fewer.
+1. The subject starts with the exact repository path of the most salient
+   file, followed by `: ` and an imperative behavior phrase. It has no
+   `Update` prefix and is 72 columns or fewer.
 2. The description opens with the problem paragraph. A fenced block of
    3 to 10 verified lines follows, with no test runner or type check in
    it. No line outside the fence starts with whitespace.

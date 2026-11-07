@@ -72,7 +72,7 @@ These hold at every tier and in every command.
 2. kabocha never merges in `ready` or `seal`. The operator runs the merge
    command. `squash` merges one PR, and only when the operator names it.
 3. Every message follows [references/message-style.md](references/message-style.md):
-   the subject `Update <exact path of the most salient file> to <behavior>`,
+   the subject `<exact path of the most salient file>: <behavior>`,
    then the problem from the PR's "Why", then the three to ten source lines
    (or the real user-facing invocation) that carry the change, then one
    value line (`That <noun> enables|allows|unblocks <outcome>`), then the

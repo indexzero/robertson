@@ -6,7 +6,7 @@
       "id": 0,
       "name": "squash-explicit-one-pr",
       "prompt": "Squash-merge PR #42 in acme/widgets. Write a proper commit message from the PR description; the branch commits are all 'wip'.",
-      "expected_output": "The operator names a squash-merge, so kabocha runs `squash`. It drafts one `area: what changed` subject and a short body from the PR description and diff, shows the complete message, waits for an explicit yes, writes the approved event, then merges with --subject and --body-file and the full head sha, and verifies the commit against the approved bytes.",
+      "expected_output": "The operator names a squash-merge, so kabocha runs `squash`. It drafts one `exact/path.ext: describe behavior` subject and a short body from the PR description and diff, shows the complete message, waits for an explicit yes, writes the approved event, then merges with --subject and --body-file and the full head sha, and verifies the commit against the approved bytes.",
       "files": [],
       "assertions": [
         {
@@ -18,7 +18,7 @@
           "kind": "safety"
         },
         {
-          "text": "Subject is lowercase after the colon, has no final period, and no planning marker",
+          "text": "Subject starts with the exact repository path of the most salient file and a colon, followed by a lowercase imperative verb. It has no Update prefix, final period, or planning marker",
           "kind": "format"
         },
         {
