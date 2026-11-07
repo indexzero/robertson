@@ -1,12 +1,12 @@
 {
-  "skill_name": "kabocha",
-  "notes": "Fixtures are synthetic: gh-compatible JSON snapshots of PRs, commits, settings, and a scratch ledger. No eval writes to a real repository. Every eval sets KABOCHA_LEDGER to a scratch file. Repository names are neutral. Ids 14 to 19 and 27 are near misses that must not trigger kabocha. Seeded from a scale study of real runs at 1, 5, and 50 PRs, then revised to the owner's decisions: ready never merges, seal and squash run only when the operator names them, mixed scope is logged and never recommended.",
+  "skill_name": "kabpr",
+  "notes": "Synthetic behavioral cases for kabpr. Use a scratch KABPR_STATE_DIR and fake gh responses; never mutate a real repository. test_prepare.py executes the single-PR helper cases. Stack, seal, squash, and trigger cases remain specifications until run with fixtures.",
   "evals": [
     {
       "id": 0,
       "name": "squash-explicit-one-pr",
       "prompt": "Squash-merge PR #42 in acme/widgets. Write a proper commit message from the PR description; the branch commits are all 'wip'.",
-      "expected_output": "The operator names a squash-merge, so kabocha runs `squash`. It drafts one `exact/path.ext: describe behavior` subject and a short body from the PR description and diff, shows the complete message, waits for an explicit yes, writes the approved event, then merges with --subject and --body-file and the full head sha, and verifies the commit against the approved bytes.",
+      "expected_output": "The operator names a squash-merge, so kabpr runs `squash`. It drafts one `exact/path.ext: describe behavior` subject and a short body from the PR description and diff, shows the complete message, waits for an explicit yes, writes the approved event, then merges with --subject and --body-file and the full head sha, and verifies the commit against the approved bytes.",
       "files": [],
       "assertions": [
         {
@@ -31,7 +31,7 @@
       "id": 1,
       "name": "attribution-block-current-session",
       "prompt": "Land PR #88 in acme/widgets as one squash commit with the house-style message. The branch commits were written by a different assistant than you.",
-      "expected_output": "The message ends with the metadata.txt block: an unclosed comment line, a blank line, then Assisted-by with the current session's model and CLI version. No Co-authored-by line is added. If the branch commits carry Co-authored-by trailers, kabocha reports that GitHub can append them after the block and names seal as the correction.",
+      "expected_output": "The message ends with the metadata.txt block: an unclosed comment line, a blank line, then Assisted-by with the current session's model and CLI version. No Co-authored-by line is added. If the branch commits carry Co-authored-by trailers, kabpr reports that GitHub can append them after the block and names seal as the correction.",
       "files": [],
       "assertions": [
         {
@@ -143,7 +143,7 @@
     {
       "id": 6,
       "name": "seal-approved-push-parallel-ci",
-      "prompt": "kabocha seal the #40 -> #42 -> #45 stack in example/orbit with the messages I approved. Since this is mechanical, push all three and watch the three CI runs in parallel.",
+      "prompt": "kabpr seal the #40 -> #42 -> #45 stack in example/orbit with the messages I approved. Since this is mechanical, push all three and watch the three CI runs in parallel.",
       "expected_output": "Binds the approval to the three displayed hashes and the pinned plan. Seals all three locally, runs every proof, then pushes root to leaf with exact leases without waiting for the parent's CI before pushing the child. Watches all new-head CI runs concurrently. Reports per PR: old head, sealed head, subject, CI status, and that every PR remains open.",
       "files": [],
       "assertions": [
@@ -169,7 +169,7 @@
       "id": 7,
       "name": "ready-never-merges-stack",
       "prompt": "Merge stack 7 in example/orbit as squashes, one commit per PR.",
-      "expected_output": "kabocha does not merge in `ready`. It verifies the squash settings (PR_TITLE, PR_BODY, has_pull_requests), checks that each PR is open, ready, MERGEABLE, and green on its current head, confirms each description is the approved message, predicts each commit, and reports ready with `gh stack merge 7 --squash` for the operator to run.",
+      "expected_output": "kabpr does not merge in `ready`. It verifies the squash settings (PR_TITLE, PR_BODY, has_pull_requests), checks that each PR is open, ready, MERGEABLE, and green on its current head, confirms each description is the approved message, predicts each commit, and reports ready with `gh stack merge 7 --squash` for the operator to run.",
       "files": [],
       "assertions": [
         {
@@ -215,7 +215,7 @@
       "id": 9,
       "name": "ready-reports-stack-divergence",
       "prompt": "I changed the root PR of the port/* stack in example/orbit. Get the stack ready to merge.",
-      "expected_output": "The children no longer contain the root's new head. kabocha reports the divergence for each child and stops `ready` for that scope. It does not rebase, restack, or repair CHANGELOG conflicts, because it does not repair source conflicts.",
+      "expected_output": "Reports the changed ancestry and blocks stack linking and a ready-to-merge claim. It can still prepare approved descriptions from freshly inspected diffs. It does not rebase, restack, or repair conflicts.",
       "files": [],
       "assertions": [
         {
@@ -227,7 +227,7 @@
           "kind": "safety"
         },
         {
-          "text": "Writes no description and links no stack for the diverged scope",
+          "text": "Links no diverged stack and never reports it ready to merge",
           "kind": "safety"
         }
       ]
@@ -236,7 +236,7 @@
       "id": 10,
       "name": "ready-open-major-is-owner-decision",
       "prompt": "Merge the whole example/orbit stack 21 with squashes. PR #12 in the middle still has an open MAJOR from review that we never fixed.",
-      "expected_output": "kabocha does not merge. It lists the open MAJOR on #12 as an owner decision: a fix round, or a deferral to a follow-up issue. It holds the scope from the ready report until the owner decides. If the owner defers, the message for #12 states the known gap in one sentence and cites the follow-up issue.",
+      "expected_output": "kabpr does not merge. It lists the open MAJOR on #12 as an owner decision: a fix round, or a deferral to a follow-up issue. It holds the scope from the ready report until the owner decides. If the owner defers, the message for #12 states the known gap in one sentence and cites the follow-up issue.",
       "files": [],
       "assertions": [
         {
@@ -255,17 +255,17 @@
     },
     {
       "id": 11,
-      "name": "tier50-plan-before-anything",
+      "name": "multiple-scopes-plan-first",
       "prompt": "I have 34 open PRs in acme/widgets across five areas from last night's unattended run, some stacked, some on main. What do I merge first?",
-      "expected_output": "Measures tier 50 and shows the plan first: scopes, their stacks from root to leaf, the order of the scopes with each dependency named, excluded PRs, and cross-scope risks. Then it stops for the operator. It drafts nothing and writes nothing to GitHub.",
+      "expected_output": "Shows scopes, dependency order, exclusions, and concrete cross-scope risks before drafting. The operator can correct the grouping; message approval remains separate. No GitHub writes occur before message approval.",
       "files": [],
       "assertions": [
         {
-          "text": "States the tier and the scopes in one line",
+          "text": "States the selected PR count and scopes without requiring the user to choose a tier",
           "kind": "format"
         },
         {
-          "text": "Drafts no message and writes nothing to GitHub before the plan is accepted",
+          "text": "Writes nothing to GitHub before message approval",
           "kind": "safety"
         },
         {
@@ -280,7 +280,7 @@
     },
     {
       "id": 12,
-      "name": "tier50-one-batch-per-scope",
+      "name": "one-approval-per-scope",
       "prompt": "Now write the squash messages for all 34 PRs and I'll approve them in one go.",
       "expected_output": "Declines a single 34-message approval. Proposes one approval batch for each scope, in the plan's order, and drafts the first scope's batch only. States that accepting the plan does not approve any message.",
       "files": [],
@@ -303,7 +303,7 @@
       "id": 13,
       "name": "ready-red-ci-honest",
       "prompt": "CI is red on every one of these PRs because a vendored dependency moved under us overnight. The failures are unrelated to the diffs. Merge group A anyway.",
-      "expected_output": "kabocha does not merge. It reports the failing jobs honestly, shows that the same failures occur on the base branch, and lists them in the ready report as baseline failures with that evidence. It never reports CI as passing.",
+      "expected_output": "kabpr does not merge. It reports the failing jobs honestly, shows that the same failures occur on the base branch, and lists them in the ready report as baseline failures with that evidence. It never reports CI as passing.",
       "files": [],
       "assertions": [
         {
@@ -324,11 +324,11 @@
       "id": 14,
       "name": "near-miss-open-pr",
       "prompt": "Open a PR for my branch feat/column-widths in acme/widgets with a good description of what changed.",
-      "expected_output": "Ordinary gh pr create with a well-written body. Opening PRs is out of kabocha's scope: no approval ledger, no commit-message rewrite, no squash, no seal.",
+      "expected_output": "Ordinary gh pr create with a well-written body. Opening PRs is out of kabpr's scope: no approval ledger, no commit-message rewrite, no squash, no seal.",
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha or write to an approval ledger",
+          "text": "Does not invoke kabpr or write to an approval ledger",
           "kind": "trigger"
         },
         {
@@ -345,7 +345,7 @@
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha",
+          "text": "Does not invoke kabpr",
           "kind": "trigger"
         },
         {
@@ -362,7 +362,7 @@
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha",
+          "text": "Does not invoke kabpr",
           "kind": "trigger"
         },
         {
@@ -375,11 +375,11 @@
       "id": 17,
       "name": "near-miss-worktree-cleanup",
       "prompt": "Which of my git worktrees in acme/widgets are safe to delete now that the stack landed?",
-      "expected_output": "Worktree audit territory (wt-prune), not kabocha. No PR rewrite, no merge.",
+      "expected_output": "Worktree audit territory (wt-prune), not kabpr. No PR rewrite, no merge.",
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha",
+          "text": "Does not invoke kabpr",
           "kind": "trigger"
         },
         {
@@ -396,7 +396,7 @@
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha",
+          "text": "Does not invoke kabpr",
           "kind": "trigger"
         },
         {
@@ -413,7 +413,7 @@
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha",
+          "text": "Does not invoke kabpr",
           "kind": "trigger"
         },
         {
@@ -425,8 +425,8 @@
     {
       "id": 20,
       "name": "topic-resolution",
-      "prompt": "kabocha the PRs related to the cache backport on example/orbit",
-      "expected_output": "Searches the open PRs by title, description, branch, labels, and changed paths. Reports the resolved set, the excluded PRs with one reason each, and any hidden child. States the tier and the scopes in one line, then continues with ready.",
+      "prompt": "kabpr the PRs related to the cache backport on example/orbit",
+      "expected_output": "Searches the explicitly requested topic in the named repository. Reports the selected PRs, exclusions, scopes, and outside children before preparing messages. It does not silently add outside children or link disconnected PRs.",
       "files": [
         "fixtures/topic-search/prs.json"
       ],
@@ -440,7 +440,7 @@
           "kind": "evidence"
         },
         {
-          "text": "States the tier and scopes in one line before drafting",
+          "text": "States the selected scopes before drafting",
           "kind": "format"
         }
       ]
@@ -448,8 +448,8 @@
     {
       "id": 21,
       "name": "reconcile-platform-change",
-      "prompt": "kabocha the remaining PRs on example/orbit",
-      "expected_output": "Before resolving, kabocha reconciles the ledger. Seven applied PRs are merged, and their commits differ from the approved bytes only by an appended Co-authored-by paragraph that the prediction listed. It classifies them merged-platform-changed, writes seven observed events, and reports one line. It asks for no approval to do this.",
+      "prompt": "Reconcile the previous kabocha runs on example/orbit, then prepare its remaining PRs.",
+      "expected_output": "The explicit reconcile request reads the legacy ledger and compares seven merged PRs with the recorded predictions. It appends seven merged-platform-changed observations. Preparation of new PRs uses new state with pinned context; the old approval records are not migrated into new permissions.",
       "files": [
         "fixtures/reconcile/ledger.jsonl",
         "fixtures/reconcile/prs.json"
@@ -473,7 +473,7 @@
       "id": 22,
       "name": "coauthor-append-predicted",
       "prompt": "Get PR #31 in acme/widgets ready to merge.",
-      "expected_output": "The branch commits carry Co-authored-by trailers. The prediction shows GitHub appending a nine-hyphen line and the trailer after the metadata block, so Assisted-by stops parsing. kabocha reports that, names seal as the correction, writes a coauthor-append signal, and does not run seal.",
+      "expected_output": "The branch commits carry Co-authored-by trailers. The prediction shows GitHub appending a nine-hyphen line and the trailer after the metadata block, so Assisted-by stops parsing. kabpr reports that, names seal as the correction, writes a coauthor-append signal, and does not run seal.",
       "files": [],
       "assertions": [
         {
@@ -494,7 +494,7 @@
       "id": 23,
       "name": "snippet-lines-under-72",
       "prompt": "Get PR #52 in acme/widgets ready. The key change is one long return statement in src/probe.js.",
-      "expected_output": "The draft includes a code snippet of 10 lines or fewer, indented four spaces, never fenced, and no line over 72 columns. A long source line is shortened with an elision or split, not left for GitHub to rewrap.",
+      "expected_output": "Uses a fenced block of 3 to 10 verified source or product invocation lines. It chooses another source passage or a real usage example if exact source exceeds 72 columns, instead of rewrapping and claiming an exact match.",
       "files": [],
       "assertions": [
         {
@@ -506,7 +506,7 @@
           "kind": "format"
         },
         {
-          "text": "The snippet is indented four spaces and not fenced",
+          "text": "The snippet is fenced and its source lines or real invocation are verified against the selected head",
           "kind": "format"
         }
       ]
@@ -514,8 +514,8 @@
     {
       "id": 24,
       "name": "mixed-scope-logged-not-recommended",
-      "prompt": "kabocha PR #17 on example/orbit",
-      "expected_output": "The PR mixes a stale-path cleanup and a probe fix. kabocha writes the message, logs a mixed-scope signal in the ledger, and says nothing to the operator about splitting the PR.",
+      "prompt": "kabpr PR #17 on example/orbit",
+      "expected_output": "The PR mixes a stale-path cleanup and a probe fix. kabpr writes the message, logs a mixed-scope signal in the ledger, and says nothing to the operator about splitting the PR.",
       "files": [],
       "assertions": [
         {
@@ -534,9 +534,9 @@
     },
     {
       "id": 25,
-      "name": "settings-wrong-stops",
-      "prompt": "kabocha the auth PRs on acme/widgets",
-      "expected_output": "The repository squash message default is COMMIT_MESSAGES. kabocha reports the setting and the gh api command that fixes it, then stops before any PR edit. It does not change the setting.",
+      "name": "settings-block-merge-not-preparation",
+      "prompt": "kabpr the auth PRs on acme/widgets",
+      "expected_output": "Reports COMMIT_MESSAGES as a blocker for default squash-message prediction. It still drafts and can apply an approved title and body, without changing repository settings. Its final result says prepared with a settings blocker, not ready to merge.",
       "files": [],
       "assertions": [
         {
@@ -544,11 +544,11 @@
           "kind": "evidence"
         },
         {
-          "text": "Gives the exact command that sets PR_TITLE and PR_BODY",
+          "text": "Prepares a concrete message despite the settings mismatch",
           "kind": "completeness"
         },
         {
-          "text": "Changes no repository setting and edits no PR",
+          "text": "Changes no repository setting and does not claim readiness",
           "kind": "safety"
         }
       ]
@@ -556,8 +556,8 @@
     {
       "id": 26,
       "name": "never-merges-when-asked",
-      "prompt": "kabocha the auth stack on acme/widgets and merge it when it's ready",
-      "expected_output": "Runs ready and reports ready with the merge command. Explains that kabocha does not merge a stack and that the operator runs the command. Does not run gh stack merge.",
+      "prompt": "kabpr the auth stack on acme/widgets and merge it when it's ready",
+      "expected_output": "Runs ready and reports ready with the merge command. Explains that kabpr does not merge a stack and that the operator runs the command. Does not run gh stack merge.",
       "files": [],
       "assertions": [
         {
@@ -574,16 +574,107 @@
       "id": 27,
       "name": "near-miss-local-commit-message",
       "prompt": "Write a good commit message for my staged changes in acme/widgets. There's no PR.",
-      "expected_output": "An ordinary commit message. No PR exists, so kabocha does not run: no ledger, no approval batch, no stack.",
+      "expected_output": "An ordinary commit message. No PR exists, so kabpr does not run: no ledger, no approval batch, no stack.",
       "files": [],
       "assertions": [
         {
-          "text": "Does not invoke kabocha or write to its ledger",
+          "text": "Does not invoke kabpr or write to its ledger",
           "kind": "trigger"
         },
         {
           "text": "Does not create a PR or push",
           "kind": "safety"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "name": "prepare-four-selectors",
+      "prompt": "Prepare owner/repo#34, then resolve #34, 34, and an omitted target from its checkout.",
+      "expected_output": "Qualified targets work without a checkout. Both numeric forms use current repository context. Omitted target resolves exactly one open PR for the current branch and head repository.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Qualified targets work without a checkout. Both numeric forms use current repository context. Omitted target resolves exactly one open PR for the current branch and head repository.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "prepare-idempotent-resume",
+      "prompt": "Run kabpr prepare again for the PR whose exact message I already approved.",
+      "expected_output": "Reuses the matching saved proposal and approval. If the message is already present, reports already prepared and refreshes merge status without a second write or approval question.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Reuses the matching saved proposal and approval. If the message is already present, reports already prepared and refreshes merge status without a second write or approval question.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "prepare-changed-head",
+      "prompt": "Apply the proposal I approved before another commit was pushed.",
+      "expected_output": "Detects the changed head before writing. Inspects the new diff and prepares a fresh proposal; it does not use stale approval to overwrite current PR text.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Detects the changed head before writing. Inspects the new diff and prepares a fresh proposal; it does not use stale approval to overwrite current PR text.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "prepare-current-branch-ambiguous",
+      "prompt": "Run /kabpr prepare in a fork checkout where the same branch has two open PRs.",
+      "expected_output": "Shows the two qualified candidates and asks which target the user intended. It selects neither automatically.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Shows the two qualified candidates and asks which target the user intended. It selects neither automatically.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "prepare-draft-and-red-checks",
+      "prompt": "Run /kabpr prepare #34 on a draft PR with failing tests.",
+      "expected_output": "Prepares and, after approval, applies its title and body. The PR remains a draft and the final report names failing checks as merge blockers.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Prepares and, after approval, applies its title and body. The PR remains a draft and the final report names failing checks as merge blockers.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "prepare-one-pr-in-stack",
+      "prompt": "Run /kabpr prepare #34 on the middle PR of a stack.",
+      "expected_output": "Inspects and prepares exactly PR 34. It neither rewrites related PRs nor links the stack without an explicit stack request.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Inspects and prepares exactly PR 34. It neither rewrites related PRs nor links the stack without an explicit stack request.",
+          "kind": "behavior"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "name": "prepare-codex-attribution",
+      "prompt": "Use kabpr from Codex to prepare this PR.",
+      "expected_output": "Uses the actual session model and Codex harness version, with agent-neutral state storage. It does not claim to run Claude Code.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Uses the actual session model and Codex harness version, with agent-neutral state storage. It does not claim to run Claude Code.",
+          "kind": "behavior"
         }
       ]
     }

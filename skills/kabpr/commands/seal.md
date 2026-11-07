@@ -99,7 +99,7 @@ plan.
 
 ## 3. Squash and restack locally
 
-Create a backup ref for every old head at `refs/kabocha/<run>/<pr>` before
+Create a backup ref for every old head at `refs/kabpr/<run>/<pr>` before
 the first rewrite. Do not delete or push them during this operation.
 
 Work from root to leaf, in each branch's existing clean worktree. Never
@@ -138,7 +138,7 @@ Before any push, prove for each PR:
 Push one branch at a time, root to leaf, with the exact old remote head in
 the lease and an explicit refspec:
 
-    old_head=$(git rev-parse "refs/kabocha/$run/$pr")
+    old_head=$(git rev-parse "refs/kabpr/$run/$pr")
     git push --force-with-lease="refs/heads/$branch:$old_head" \
       "$push_remote" "refs/heads/$branch:refs/heads/$branch"
 

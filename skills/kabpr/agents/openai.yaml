@@ -1,0 +1,4 @@
+interface:
+  display_name: "kabpr"
+  short_description: "Prepare and verify a PR's squash commit message"
+  default_prompt: "Use $kabpr prepare to prepare the PR for my current branch."

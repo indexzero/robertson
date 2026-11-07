@@ -1,11 +1,11 @@
 ---
 name: message-style
-description: The house form of a kabocha commit message. Every command reads it before it drafts or checks a message.
+description: The house form of a kabpr commit message. Every command reads it before it drafts or checks a message.
 ---
 
 # Message style
 
-A kabocha message is a PR title plus a PR description. GitHub turns them
+A kabpr message is a PR title plus a PR description. GitHub turns them
 into the squash commit, so the description is written as a commit body,
 not as a PR essay. The long PR description stays in GitHub's edit history.
 
@@ -38,7 +38,7 @@ Closes #N
 
 <!-- metadata.txt
 
-Assisted-by: <model display name>, claude-code@<version>
+Assisted-by: <model display name>, <harness>@<version>
 ````
 
 Lead with the problem the PR body already explains (Rule 6). It is the
@@ -58,7 +58,7 @@ failures.
 - 72 columns or fewer. When the path is long, choose a shorter, exact verb
   phrase.
 - A subject that needs "and" for two claims is a mixed-scope signal. Write
-  the subject anyway and log the signal (SKILL.md invariant 9).
+  the subject anyway and log the signal.
 
 ## Code block
 
@@ -71,12 +71,16 @@ failures.
 - A test runner, a type check, or a lint of the code itself is never the
   block. `pnpm --filter x test`, `node --test`, and `tsc` say nothing about
   what changed.
-- Copy source lines exactly. Wrap a line longer than 72 columns at a
-  natural break. Mark an elision with `...`, and only inside a line.
+- Copy source lines exactly. Choose a shorter source passage or a real
+  usage example when a line exceeds 72 columns. Do not rewrap source and
+  then claim it is an exact match.
 - Use a fenced block with the file's language. The description opens
   with the problem paragraph, so the fence never sits on the first line.
   GitHub strips the leading whitespace of the description's first line.
-- Verify every line against the PR head (`git grep -F`).
+- Verify every source line against the pinned PR head. Use `git grep -F`
+  when that head exists locally, or fetch the file from the head repository
+  at its full commit SHA. Verify product invocations against that version
+  of its documented interface. The structural linter cannot do this review.
 
 ## Value line
 
@@ -104,11 +108,13 @@ instructions require. The default:
 ```text
 <!-- metadata.txt
 
-Assisted-by: <model display name>, claude-code@<version>
+Assisted-by: <model display name>, <harness>@<version>
 ```
 
-- `<model display name>` is the model in this session. `<version>` is the
-  output of `claude --version`. Check both for each run.
+- Use the model and harness actually running this session, with its
+  reported version. Do not label Codex as Claude Code or guess a model
+  from another agent's commit. If unavailable, state that fact and follow
+  the repository's attribution policy.
 - Leave the comment open. A closing `-->` makes git miss the trailer.
 - The block is the last paragraph. GitHub can append a paragraph after it.
   [github.md](github.md) says when, and how to predict it.

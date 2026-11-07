@@ -8,7 +8,7 @@ stage 2 status="Tried. Nothing depends on it." purpose="Build it one time and se
   criterion "An agent can build it unattended."
   criterion "A machine can check Done."
 
-  slot "kabocha" path="skills/kabocha"
+  slot "kabpr" path="skills/kabpr"
 }
 stage 3 status="Used. The design can change." purpose="Learn from use." {
   criterion "The build passes its Done."
