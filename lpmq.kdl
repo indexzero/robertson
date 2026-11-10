@@ -3,6 +3,7 @@ stage 1 status="Designed. Not built." purpose="Plan the build." {
   criterion "A sound approach, stack, and architecture, written as a PROMPT.md or an orckit."
 
   slot "sandwalk" path="skills/sandwalk"
+  slot "cruft-prune" path="skills/cruft-prune"
 }
 stage 2 status="Tried. Nothing depends on it." purpose="Build it one time and see." {
   criterion "An agent can build it unattended."

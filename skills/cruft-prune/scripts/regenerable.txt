@@ -1,0 +1,22 @@
+# Dirs and files a lockfile or build can rebuild. One entry per line.
+# Bare names are directory names. Entries with * ? [ are file globs.
+# .cache is deliberately absent: reviewers keep notes there.
+node_modules
+dist
+dist-canvas
+build
+.build
+coverage
+.turbo
+.vite
+test-results
+playwright-report
+.playwright
+pnpm-store
+.pnpm-store
+target
+node-compile-cache
+__pycache__
+.venv
+*.tsbuildinfo
+*.last-run.json
