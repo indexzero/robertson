@@ -1,6 +1,6 @@
 ---
 protocol_version: 1
-compares: "prune-cruft against the same model unassisted, an earlier prune-cruft, or wt-prune"
+compares: "cruft-prune against the same model unassisted, an earlier cruft-prune, or wt-prune"
 fixtures: "evals/make-fixtures.sh <dir>, exported as $FIXTURES; synthetic, no network, no real credential"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: prune-cruft
+name: cruft-prune
 description: >-
   Decide what is safe to delete when a disk is full of old git worktrees,
   stray clones, copies of a source tree with no .git, scratch directories
@@ -7,14 +7,14 @@ description: >-
   safe to delete", wants the disk back, or is about to rm -rf a directory
   that looks dead. It surveys, audits, and rescues. It never deletes; the
   operator runs the paste block it writes. Invoked explicitly as
-  /prune-cruft.
+  /cruft-prune.
 argument-hint: "[survey|audit|rescue] <path or branch ...>"
 disable-model-invocation: true
 metadata:
   version: "0.1.0"
 ---
 
-# prune-cruft
+# cruft-prune
 
 Nearly all cruft can be rebuilt. A worktree whose branch merged, a clone of a
 repo that still exists, a `node_modules` with a lockfile beside it: deleting
@@ -35,7 +35,7 @@ The first word of the request selects the mode. Without one, use `audit`.
 |---|---|---|
 | `survey` | Reports where the bytes are, by directory and by kind: dependencies, build output, git objects, copies, everything else. | Nothing. It gives no verdicts. |
 | `audit` | Classifies each candidate SAFE or KEEP with a named witness, then writes `SAFE.TO.DELETE.STUFF.<YYYY-MM-DD>.md` with YAML frontmatter and one paste block. | Nothing but that file. If a file for today exists, suffix it. |
-| `rescue` | Copies the files an audit found irreplaceable to a destination the user names, and records each copy with its hash. | Writes only into the destination. |
+| `rescue` | Copies the files an audit found irreplaceable to one `rescued/` directory beside the plan file, keeping each file's target and relative path, and records each copy with its hash. | Writes only into `rescued/`. |
 
 Deletion is not a mode. The paste block is the product, and the operator runs
 it after reading the reasons. Never run `rm`, `wt remove`, `git worktree

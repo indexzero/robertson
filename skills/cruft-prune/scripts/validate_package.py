@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the prune-cruft package: frontmatter, word budgets, routes, evals.
+"""Validate the cruft-prune package: frontmatter, word budgets, routes, evals.
 
 Exit 0 when every check passes, 1 otherwise. Prints one PASS or FAIL line per check.
 """
@@ -43,10 +43,10 @@ if not SKILL.is_file():
     sys.exit(1)
 
 front, body = split(SKILL.read_text())
-if re.search(r"^name:\s*prune-cruft\s*$", front, re.M):
-    ok("frontmatter names prune-cruft")
+if re.search(r"^name:\s*cruft-prune\s*$", front, re.M):
+    ok("frontmatter names cruft-prune")
 else:
-    fail("frontmatter name is not prune-cruft")
+    fail("frontmatter name is not cruft-prune")
 if re.search(r"^\s+version:\s*[\"']\d+\.\d+\.\d+[\"']\s*$", front, re.M):
     ok("frontmatter has a semantic version")
 else:
@@ -65,6 +65,13 @@ if missing:
     fail("routes missing: " + ", ".join(missing))
 else:
     ok(f"{len(routes)} routes exist")
+
+shims = [f"commands/cruft-{m}.md" for m in ("survey", "audit", "rescue")]
+missing_shims = [s for s in shims if not (ROOT / s).is_file()]
+if missing_shims:
+    fail("command shims missing: " + ", ".join(missing_shims))
+else:
+    ok("3 command shims exist")
 
 refs = [ROOT / r for r in routes if r.startswith("references/") and (ROOT / r).is_file()]
 runtime = n + sum(words(p.read_text()) for p in refs)
@@ -106,4 +113,4 @@ else:
 if failures:
     print(f"\n{len(failures)} failure(s)")
     sys.exit(1)
-print("\nprune-cruft package validation passed")
+print("\ncruft-prune package validation passed")

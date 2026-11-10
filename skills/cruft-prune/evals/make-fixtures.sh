@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# make-fixtures.sh — build the synthetic repo farm the prune-cruft evals run against.
+# make-fixtures.sh — build the synthetic repo farm the cruft-prune evals run against.
 #
 # Usage: make-fixtures.sh <dir>
 #   <dir> must not exist, or must be an empty directory. Nothing here touches
@@ -51,7 +51,7 @@ mkdir -p "$P/src/shell" "$P/doc"
 cat >"$P/README.md" <<'EOF'
 # demo
 
-A fixture repository for the prune-cruft evals. Nothing in it is real.
+A fixture repository for the cruft-prune evals. Nothing in it is real.
 EOF
 cat >"$P/src/shell/paste.ts" <<'EOF'
 export function paste(input: string): string {

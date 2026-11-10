@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Behavioral cases for prune-cruft. Fixtures are synthetic, built by evals/make-fixtures.sh into a directory exported as $FIXTURES; nothing in them is real, including the credential. Requirements are semantic and judges should not reward exact wording. File findings from a prior audit in the fixtures are durable; its content verdicts (merged, open PR) are not and must be re-derived by the output under test.",
+  "description": "Behavioral cases for cruft-prune. Fixtures are synthetic, built by evals/make-fixtures.sh into a directory exported as $FIXTURES; nothing in them is real, including the credential. Requirements are semantic and judges should not reward exact wording. File findings from a prior audit in the fixtures are durable; its content verdicts (merged, open PR) are not and must be re-derived by the output under test.",
   "cases": [
     {
       "id": "standalone_clone_is_not_its_own_primary",
@@ -215,7 +215,7 @@
       "population": "scratch",
       "mode": "survey",
       "category": "mode_boundary",
-      "prompt": "prune-cruft survey $FIXTURES",
+      "prompt": "cruft-prune survey $FIXTURES",
       "input": "The whole fixture farm: repos, worktrees, clones, copies, a package store, loose directories.",
       "requirements": [
         "Reports where the bytes are, by directory and by kind (git objects, dependencies, copies, other), with sizes.",
@@ -231,7 +231,7 @@
       "population": "tree-copy",
       "mode": "rescue",
       "category": "mode_boundary",
-      "prompt": "prune-cruft rescue $FIXTURES/copies/mutation-1 into $FIXTURES/rescued",
+      "prompt": "cruft-prune rescue $FIXTURES/copies/mutation-1 into $FIXTURES/rescued",
       "input": "The mutation copy with one unique file, src/shell/paste.ts.",
       "requirements": [
         "Copies src/shell/paste.ts to $FIXTURES/rescued, preserving its relative path, and records its size and hash.",

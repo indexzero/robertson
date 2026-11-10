@@ -157,7 +157,7 @@ def parser(prog, doc, rescue=False):
     ex = sub.add_parser("execute", help="re-verify each DELETE row, ask, then rm -rf")
     ex.add_argument("plan", metavar="PLAN.TSV")
     if rescue:
-        rs = sub.add_parser("rescue", help="copy each KEEP row's unique files to <copy>.unique/")
+        rs = sub.add_parser("rescue", help="copy each KEEP row's unique files to rescued/ beside the plan")
         rs.add_argument("plan", metavar="PLAN.TSV")
     return p
 

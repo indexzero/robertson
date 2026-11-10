@@ -3,7 +3,7 @@
 once every file in them is proven to exist somewhere canonical.
 
   tree-copies.py plan <dir> --canon <clone>... [--keep <path>]... [--witness <file>]
-  tree-copies.py rescue <copies-plan.tsv>    copy each KEEP row's unique files to <copy>.unique/
+  tree-copies.py rescue <copies-plan.tsv>    copy each KEEP row's unique files to rescued/ beside the plan
   tree-copies.py execute <copies-plan.tsv>   re-verify fingerprints, ask, then rm -rf
 
 plan is read-only. It writes copies-plan.tsv, copies-plan-unique.tsv, and a
@@ -20,7 +20,7 @@ one of:
      in a --canon repo
   2. its raw bytes are a blob in a --canon repo
   3. its sha256 is an object in a --canon repo's LFS store
-  4. a byte-identical twin sits in <copy>.unique/ (left by rescue)
+  4. a byte-identical twin sits in rescued/<target>/ beside the plan (left by rescue)
 
 A witness (cited) file counts as saved only via 2, 3, or 4. Anything else is
 KEEP, with the unique files listed in <plan>-unique.tsv. --keep paths are
@@ -59,11 +59,11 @@ def find_copies(root):
         if dirpath != root and (".git" in names or L.is_bare(dirpath)):
             dirnames[:] = []
             continue
-        if dirpath != root and not dirpath.endswith(".unique") and is_copy(names):
+        if dirpath != root and os.path.basename(dirpath) != "rescued" and is_copy(names):
             out.append(dirpath)
             dirnames[:] = []
             continue
-        dirnames[:] = [d for d in dirnames if d != "node_modules" and not d.endswith(".unique")
+        dirnames[:] = [d for d in dirnames if d not in ("node_modules", "rescued")
                        and not PNPM_STORE.match(d)]
     return out
 
@@ -119,7 +119,7 @@ def sha256_of(path):
     return h.hexdigest()
 
 
-def prove(copy, files, stores, cited):
+def prove(copy, files, stores, cited, rescue_dir):
     """Return the list of unique (rel, size) among files. Order of checks: raw, converted, LFS, rescue."""
     rels = [f[0] for f in files]
     size = dict((f[0], f[1]) for f in files)
@@ -147,7 +147,6 @@ def prove(copy, files, stores, cited):
 
     # 3. LFS object by sha256, in any store's LFS dir.
     lfs_dirs = [f"{g}/lfs/objects" for g in map(L.gitdir, stores) if g and os.path.isdir(f"{g}/lfs/objects")]
-    rescue_dir = f"{copy}.unique"
     unique = []
     for r in rels:
         if r in saved:
@@ -168,6 +167,7 @@ def plan(a):
     root, stores, keeps = a.dir, a.canon, a.keep
     cited = L.load_witness(a.witness)
     out = a.out or f"{HERE}/copies-plan.tsv"
+    rescued = os.path.join(os.path.dirname(os.path.abspath(out)), "rescued")
     uniq_out = re.sub(r"\.tsv$", "", out) + "-unique.tsv" if out.endswith(".tsv") else out + "-unique.tsv"
     copies = sorted(find_copies(root))
     print(f"copies: {len(copies)}", file=sys.stderr)
@@ -180,7 +180,7 @@ def plan(a):
         if reason is None and not stores:
             reason = "no canonical clone given (--canon)"
         if reason is None:
-            unique = prove(c, files, stores, cited)
+            unique = prove(c, files, stores, cited, f"{rescued}/{os.path.relpath(c, root)}")
             if unique:
                 reason = (f"{len(unique)} unique files, {L.gib(sum(s for _, s in unique))}, "
                           f"e.g. {', '.join(r for r, _ in unique[:3])}")
@@ -205,7 +205,7 @@ def plan(a):
         for c, r, s in uniq_rows:
             f.write(f"{os.path.relpath(c, root)}\t{r}\t{s}\n")
     with open(f"{out}.meta.json", "w") as f:
-        json.dump({"root": root, "canon": stores, "keep": keeps, "witness": a.witness, "unique": uniq_out}, f, indent=1)
+        json.dump({"root": root, "canon": stores, "keep": keeps, "witness": a.witness, "unique": uniq_out, "rescued": rescued}, f, indent=1)
 
     for action in ("DELETE", "KEEP"):
         cs = [c for c in copies if rows[c]["action"] == action]
@@ -229,7 +229,7 @@ def rescue(plan_path):
     for t, rel, _ in uniq:
         if t not in keeps:
             continue
-        src, dst = f"{root}/{t}/{rel}", f"{root}/{t}.unique/{rel}"
+        src, dst = f"{root}/{t}/{rel}", f"{meta['rescued']}/{t}/{rel}"
         if os.path.lexists(dst):
             skipped += 1
             continue
@@ -237,7 +237,7 @@ def rescue(plan_path):
         shutil.copy2(src, dst)
         copied += 1
     print(f"rescued {copied} files, {skipped} already present. Re-run plan: copies whose unique "
-          f"files all have a twin in <copy>.unique/ become DELETE.")
+          f"files all have a twin under rescued/ become DELETE.")
 
 
 def execute(plan_path):

@@ -13,8 +13,8 @@ rescue, not a reason to keep the copy.
 [--witness <file>]` treats as a copy any directory holding `package.json`
 plus `pnpm-lock.yaml` or `pnpm-workspace.yaml`, or `Cargo.toml` plus
 `Cargo.lock`, with no `.git` in itself or any ancestor below the scanned
-root, and not inside a repo. Outermost only. Directories ending in
-`.unique` are skipped; they are rescue output.
+root, and not inside a repo. Outermost only. A directory named
+`rescued` is skipped; it is rescue output.
 
 A pnpm content-addressable store looks like a copy and is not. Its
 `v10/tmp/_tmp_*` directories hold extracted package contents with a
@@ -38,8 +38,8 @@ script checks them in this order because each is dearer than the last.
 3. LFS object. For the remaining misses, SHA-256 the file and look for
    `<canon>/.git/lfs/objects/<aa>/<bb>/<sha>`. charlie.dev stores every
    image as a pointer; 717 of one copy's 718 misses were in the LFS store.
-4. Rescue twin. A byte-identical file at `<copy>.unique/<relative path>`,
-   left by an earlier `rescue`.
+4. Rescue twin. A byte-identical file at `rescued/<target>/<relative path>`
+   beside the plan, left by an earlier `rescue`.
 
 Files under a submodule path are checked against the submodule's own repo as
 well, named in `--canon`. `vendor/opentui-web/*` lives in the opentui-web
@@ -68,12 +68,10 @@ total, mostly an edited `package.json` or lockfile.
 ## Rescue
 
 `tree-copies.py rescue copies-plan.tsv` copies every unique file of every
-KEEP row to `<copy>.unique/<relative path>`, a sibling directory, never
-inside the copy, never overwriting. A document that cited
-`mutation-1/render/washe/src/shell/paste.ts` is one path segment from the
-saved file. Re-run `plan` afterwards; a copy whose unique files all have
-twins becomes DELETE. The `.unique` directories are what remains when the
-copies are gone.
+KEEP row to `rescued/<target>/<relative path>`, one directory beside the
+plan file, never inside a copy, never overwriting. Re-run `plan`; a copy
+whose unique files all have twins becomes DELETE. The `rescued` directory
+is what remains when the copies are gone, and it packs as one unit.
 
 ## The record
 

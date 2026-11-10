@@ -2,12 +2,12 @@
 status: "Steps 0 to 3 done and validated on 2026-11-07. Step 4 waits on the owner's target. Nothing committed."
 decisions_taken:
   - "snapshot rule is a --snapshot-max flag, default 50, documented as policy"
-  - "rescue writes to <copy>.unique/ beside the copy"
-  - "no commands/ shims yet"
+  - "rescue writes to one rescued/ directory beside the plan file"
+  - "commands/ shims: /cruft-survey, /cruft-audit, /cruft-rescue"
   - "survey stays a mode"
-  - "name stays prune-cruft"
-branch: skill/prune-cruft
-worktree: ~/Git/indexzero/robertson-worktrees/skill-prune-cruft
+  - "name is cruft-prune: the skill is about cruft, prune is what it does to it"
+branch: skill/cruft-prune
+worktree: ~/Git/indexzero/robertson-worktrees/skill-cruft-prune
 supersedes: skills/wt-prune (lpmq stage 4, untouched until step 7)
 sources:
   - "orckits/scratch/sslop-audit/prune_sslop_repos.py"
@@ -18,7 +18,7 @@ budget:
   runtime_words: 5000
 ---
 
-# Plan: prune-cruft
+# Plan: cruft-prune
 
 One skill that decides what is safe to delete, for every kind of disk cruft
 a repo and its agents leave behind: worktrees, stray clones, copies of a
@@ -32,9 +32,9 @@ that fails on the parts not yet written. This plan joins them.
 
 ## 0. Done
 
-- `skills/prune-cruft/SKILL.md`, 1046 words. Theory of failure, three
+- `skills/cruft-prune/SKILL.md`, 1046 words. Theory of failure, three
   modes, the proof table, nine safeguards, the audit procedure, final check.
-- `skills/prune-cruft/scripts/validate_package.py`. Budgets, routes, prose
+- `skills/cruft-prune/scripts/validate_package.py`. Budgets, routes, prose
   rules, eval shape. Exit 1 today on missing references and evals.
 - `lpmq.kdl` slot at stage 1.
 - In orckits, `prune_sslop_repos.py` (1019 repo dirs deleted by the owner,
@@ -42,7 +42,7 @@ that fails on the parts not yet written. This plan joins them.
 
 ## 1. References
 
-Seven files under `skills/prune-cruft/references/`. With `SKILL.md` they
+Seven files under `skills/cruft-prune/references/`. With `SKILL.md` they
 must stay under 5000 words, so about 550 words each on average. Shared
 material goes in two files and the population files stay short.
 
@@ -61,7 +61,7 @@ step knows what to read.
 
 ## 2. Scripts
 
-Move the two orckits scripts into `skills/prune-cruft/scripts/` and make
+Move the two orckits scripts into `skills/cruft-prune/scripts/` and make
 their orckits knowledge into arguments. Keep `audit-worktree.sh` as is for
 now, with two fixes.
 
@@ -125,8 +125,8 @@ unattended and the validator checks Done.
 
 ## 7. Retire wt-prune
 
-Only after prune-cruft has been used in place of it. `skills/wt-prune/`
-becomes a pointer to `prune-cruft worktrees`, and its slot comes off the
+Only after cruft-prune has been used in place of it. `skills/wt-prune/`
+becomes a pointer to `cruft-prune worktrees`, and its slot comes off the
 ladder. Not before.
 
 ## Decisions for the owner
@@ -134,10 +134,10 @@ ladder. Not before.
 1. The snapshot rule. A local-only repo under 50 commits is deleted on
    policy, not proof. Keep that rule in the skill, or make it an explicit
    flag the operator passes?
-2. Where rescue writes. `<copy>.unique/` beside the copy keeps citations one
-   segment away. A single `rescued/` dir per audit would be easier to pack.
+2. Where rescue writes. Decided: one `rescued/` dir beside the plan file,
+   with `<target>/<relative path>` inside it, so it packs as one unit.
 3. `commands/` shims. Clarity ships three-line wrappers so `/prune-worktrees`
-   works. Worth having, or is `/prune-cruft worktrees` enough?
+   works. Worth having, or is `/cruft-prune worktrees` enough?
 4. Whether `survey` is a mode or just the first step of `audit`.
 5. The name.
 
