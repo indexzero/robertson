@@ -7,8 +7,8 @@ description: GitHub settings, stacks, and the changes GitHub makes when it squas
 
 ## Settings
 
-The `ready` path depends on two repository settings. Check them before the
-first write:
+Default squash-message prediction depends on the repository settings.
+Read them during preparation:
 
     gh api repos/OWNER/REPO \
       -q '{has_pull_requests,squash_merge_commit_title,squash_merge_commit_message}'
@@ -19,8 +19,11 @@ first write:
 - `has_pull_requests` must be `true`. The pull request feature checkbox
   sits on the same settings page, and an operator can clear it by accident.
 
-kabocha does not change repository settings. Report the setting and the
-command that fixes it, then stop.
+Also check `allow_squash_merge`. A missing setting is unknown, not a
+passing result. Preparation can still draft and apply an approved title
+and body. Report incorrect or unavailable settings as merge blockers;
+do not claim the default squash message matches the proposal. kabpr does
+not change repository settings as part of preparation.
 
 ## Stacks
 
@@ -40,7 +43,7 @@ command that fixes it, then stop.
 
 ## What GitHub does to a squash commit
 
-Predict the commit before the ready report. With `PR_TITLE` and `PR_BODY`,
+Predict the commit before the preparation report. With `PR_TITLE` and `PR_BODY`,
 GitHub builds the message as follows. Each point was observed on a real
 merge.
 
@@ -72,9 +75,21 @@ GitHub keeps every revision of a PR description:
         mergeCommit { oid } body
         userContentEdits(first: 20) { nodes { editedAt editor { login } } } } } }'
 
-The editor login is the account that owns the token. kabocha and the
-operator usually share that account. Tell kabocha's edits from the
+The editor login is the account that owns the token. kabpr and the
+operator usually share that account. Tell kabpr's edits from the
 operator's by the times and body hashes in the ledger, never by the login.
 
 Parse this output with a JSON parser in a script. A shell `echo` of the
 JSON can turn `\n` escapes into newlines and break the parse.
+
+## API boundaries
+
+The helper uses the [GitHub CLI PR view](https://cli.github.com/manual/gh_pr_view)
+and the [pull request REST API](https://docs.github.com/en/rest/pulls/pulls).
+Title/body updates accept no documented head-commit condition. Inspect
+before and verify after the write; do not describe this as an atomic
+compare-and-swap. The helper changes only those two fields.
+
+The CLI's [checks command](https://cli.github.com/manual/gh_pr_checks)
+can filter required checks when more detail is needed. A missing check
+result or an inaccessible API is unknown. Do not infer that tests passed.

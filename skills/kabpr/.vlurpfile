@@ -1,0 +1,9 @@
+# .vlurpfile: remote text that kabpr reads. Paths resolve from this file's
+# directory (vlurp >= 2.2.0), so run it from anywhere, e.g. the repository root:
+#   vlurp ./skills/kabpr/.vlurpfile && vlurp verify ./skills/kabpr/references/of-structure
+# Or restore exactly the bytes the committed lineage pins, checking every sha256:
+#   vlurp ./skills/kabpr/references/of-structure/.vlurp.jsonl
+#
+# The Elements of Documentation: the rules for subjects and bodies that
+# kabpr cites by number. Pinned to indexzero/of-structure main.
+vlurp 'pkg:github/indexzero/of-structure@d158c8c#skills/elements-of-documentation/bundle/the-elements-of-documentation.md' ./references/of-structure/

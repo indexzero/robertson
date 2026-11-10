@@ -18,7 +18,7 @@ Stop and report instead of merging when any of these is true:
 
 1. The PR is not open, or it is a draft.
 2. The base is not the default branch. A stacked PR needs its parent
-   merged first. Name `ready` and `gh stack merge` for a stack.
+   merged first. Name `prepare --stack` and `gh stack merge` for a stack.
 3. GitHub reports `CONFLICTING`.
 4. Required checks on the current head are not green.
 
