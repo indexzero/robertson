@@ -222,6 +222,10 @@ accumulator on `{}` that died on an error named `constructor`, and a
 
 Fix every finding with a test, in commits separate from the features.
 
+Run the gates and the commit as one chained command (`check && test &&
+commit`). A commit typed after a failing check still commits, and the
+message then claims a state the tree was never in.
+
 ## Step 8: Documents that can be checked
 
 Read [references/docs-and-release.md](references/docs-and-release.md).

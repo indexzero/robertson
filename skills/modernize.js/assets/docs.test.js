@@ -25,6 +25,7 @@ const DOC_GLOBS = ['*.md', 'doc/*.md', 'docs/*.md', 'examples/*.md']
 // Only the ones that exist are used.
 const CODE_DIRS = ['src', 'lib', 'bin', 'test', 'examples', 'plugins', 'doc', 'docs', 'scripts']
 
+/** @param {string} file */
 const read = file => readFileSync(path.join(root, file), 'utf8')
 const docs = globSync(DOC_GLOBS, { cwd: root }).sort()
 const pkg = JSON.parse(read('package.json'))
