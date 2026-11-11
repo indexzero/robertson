@@ -1,0 +1,129 @@
+{
+  "skill_name": "modernize.js",
+  "notes": "Fixtures are clones of real repositories with the remote removed. Eval 0 uses errs at tag 1.0.0, where the defects are known from the later breaking/v3 review: tsc loads no JavaScript, build:types emits nothing, and errs.d.ts value-exports a class the module does not export. Evals 1 and 2 use node-pkginfo and node-asana-api at their last release; neither has been modernized, so ground truth is the assertions, not a reference diff. Iteration 1 (2026-11-10, one run per configuration): eval 0 did not discriminate, the baseline scored 7/7. The difference that mattered on eval 1 was whether the type gate was real, which is now an assertion. After iteration 1 the owner clarified that revival is the point of the skill: both asana runs had recommended deprecation, so the skill and eval 2 now treat that as a failure.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "inert-typecheck-audit",
+      "prompt": "i modernized this package earlier this year and shipped 1.0.0. `pnpm check` is green and so are the tests. before i cut 1.0.1 can you tell me whether the types we ship are actually verified against the code? i hand-wrote the .d.ts files next to the sources and i've got checkJs on, so i think we're covered, but i'd like someone to confirm rather than take the exit code's word for it. don't fix anything yet, just tell me what's true.",
+      "expected_output": "Reports that the typecheck is inert: with a sibling .d.ts for every .js, tsc drops the JavaScript from the program, so checkJs checks nothing (shown with tsc --listFiles or equivalent evidence). Reports that build:types emits nothing. Finds at least one concrete disagreement between a declaration and its module, most importantly that errs.d.ts value-exports ErrorBoundary while errs.js does not export it, so the import throws at runtime. Notes that CI does not run check. Changes no source file.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "States that the JavaScript in src/ is not actually typechecked, despite checkJs being set",
+          "kind": "verdict"
+        },
+        {
+          "text": "Explains the cause: a sibling .d.ts makes TypeScript drop the .js from the program",
+          "kind": "reasoning"
+        },
+        {
+          "text": "Backs the claim with evidence from running the compiler (tsc --listFiles, or an injected error that tsc fails to report), not from reading the config alone",
+          "kind": "evidence"
+        },
+        {
+          "text": "Identifies that build:types (and so prepublishOnly) emits no declarations",
+          "kind": "evidence"
+        },
+        {
+          "text": "Finds that errs.d.ts exports ErrorBoundary as a value while the module does not, so importing it fails at runtime",
+          "kind": "recall"
+        },
+        {
+          "text": "Notes that CI does not run the check script",
+          "kind": "completeness"
+        },
+        {
+          "text": "Leaves the repository's tracked files unmodified",
+          "kind": "safety"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "revive-pkginfo",
+      "prompt": "This is pkginfo, a tiny thing I wrote in 2011 so a module could expose fields from its own package.json: `require('pkginfo')(module, 'version')`. It still gets downloads. I want to modernize it properly for a 1.0: ESM, a real test runner, CI, the works. Go ahead and do it on this branch. Commit as you go but don't push or publish anything, and tell me at the end what breaks for existing users.",
+      "expected_output": "A working ESM package on a current engines floor with node:test tests, an exports map, GitHub Actions CI, and a migration guide. The old vows suite's behaviour is pinned before the rewrite and deleted only after the new suite covers it. The module/module.parent problem is recognised as the central breaking change (ESM has no `module` object to pass) and handled deliberately, with before/after in the migration guide. Examples run as part of the tests. The final report names the breaking changes and states what was not verified. Nothing is pushed or published. Types are generated from JSDoc, or if hand-written are compared against the code, so that a wrong annotation fails the check.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "package.json has type module, an exports map, and an engines floor of a currently supported Node line",
+          "kind": "format"
+        },
+        {
+          "text": "The test script uses node:test and the suite passes when run",
+          "kind": "evidence"
+        },
+        {
+          "text": "The typecheck gate is real: changing a JSDoc @returns in the source to a wrong type makes the package's check script exit non-zero",
+          "kind": "evidence"
+        },
+        {
+          "text": "The old tests were run or ported before being deleted, and the report or commit says what they covered",
+          "kind": "reasoning"
+        },
+        {
+          "text": "Identifies that ESM has no `module` object and makes an explicit, documented decision about how callers identify themselves",
+          "kind": "reasoning"
+        },
+        {
+          "text": "A migration guide exists with before/after code for each breaking change",
+          "kind": "format"
+        },
+        {
+          "text": "The example files are executed by a test or script, not left unrun",
+          "kind": "completeness"
+        },
+        {
+          "text": "A CI workflow exists whose Node matrix matches the engines range",
+          "kind": "format"
+        },
+        {
+          "text": "Work is split across more than one commit and nothing was pushed or published",
+          "kind": "safety"
+        },
+        {
+          "text": "The final report lists the breaking changes for existing users",
+          "kind": "completeness"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "plan-asana-api",
+      "prompt": "ok so node-asana-api. I wrote this client in 2012 against Asana's 1.0 REST API and last touched it in 2015. Someone opened an issue asking if it's maintained, and I want to bring it back. Before I spend a weekend on it: what would it actually take? Plan only please, don't change any files.",
+      "expected_output": "A plan for the revival, not a diff and not a recommendation to deprecate. It sizes the revival and says why, says in a line what else exists (Asana ships an official Node client) and how the revived package will differ, names how behaviour would be pinned given tests that need a real API token, lists the breaking changes as a table before any work, and replaces the deprecated `request`. No files are changed.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Plans the revival and does not recommend deprecating or archiving the package instead; any mention of the official client is brief and says how this package will differ",
+          "kind": "verdict"
+        },
+        {
+          "text": "Names the deprecated `request` dependency (and `async`) and what replaces them",
+          "kind": "evidence"
+        },
+        {
+          "text": "Notices the tests need live API credentials and proposes how to pin behaviour without them",
+          "kind": "reasoning"
+        },
+        {
+          "text": "Lists the breaking changes a modernization would make before proposing any implementation",
+          "kind": "format"
+        },
+        {
+          "text": "States a chosen size or scope for the revival and the reason",
+          "kind": "reasoning"
+        },
+        {
+          "text": "Names the errs ~0.3.2 dependency by its version range and says what happens to it (replace, or upgrade across its breaking major)",
+          "kind": "recall"
+        },
+        {
+          "text": "Leaves the repository's tracked files unmodified",
+          "kind": "safety"
+        }
+      ]
+    }
+  ]
+}
