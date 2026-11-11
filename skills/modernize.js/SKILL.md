@@ -9,7 +9,7 @@ description: >-
   package or Node.js repo, mentions a package they wrote years ago, asks to
   drop CommonJS, replace a dead test framework or a deprecated dependency
   (request, async, util._extend, url.parse, new Buffer), cut a long-delayed
-  1.0 or a new major, or asks whether an old package is worth reviving at all.
+  1.0 or a new major, or asks what it would take to revive an old package.
   Also use it to audit a modernization that is already done, especially when
   the user asks whether a green typecheck, lint, or test run can be trusted.
   Do not use it for new packages, for application code with no published API,
@@ -53,8 +53,12 @@ is a line whose old behaviour you now have to prove you kept.
 A package with many dependents and a working API usually wants "tune in
 place", however dated the source looks. A package that is mostly yours and
 whose reason to exist has been changed by the language wants the full path.
-If the honest answer is that the language or a maintained package now does
-the job, say so: recommending deprecation with a pointer is a valid outcome.
+
+The owner asked for a revival, so the answer is a revival. That an official
+or more popular package now exists, or that downloads are low, changes what
+the revived package should be (smaller, zero-dependency, a different niche).
+It is not a reason to recommend deprecating it. Say in one line what else
+exists and how this package will differ, then get on with the work.
 
 ## Step 0: Survey
 

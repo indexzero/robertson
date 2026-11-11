@@ -1,6 +1,6 @@
 {
   "skill_name": "modernize.js",
-  "notes": "Fixtures are clones of real repositories with the remote removed. Eval 0 uses errs at tag 1.0.0, where the defects are known from the later breaking/v3 review: tsc loads no JavaScript, build:types emits nothing, and errs.d.ts value-exports a class the module does not export. Evals 1 and 2 use node-pkginfo and node-asana-api at their last release; neither has been modernized, so ground truth is the assertions, not a reference diff. Iteration 1 (2026-11-10, one run per configuration): eval 0 did not discriminate, the baseline scored 7/7. The difference that mattered on eval 1 was whether the type gate was real, which is now an assertion.",
+  "notes": "Fixtures are clones of real repositories with the remote removed. Eval 0 uses errs at tag 1.0.0, where the defects are known from the later breaking/v3 review: tsc loads no JavaScript, build:types emits nothing, and errs.d.ts value-exports a class the module does not export. Evals 1 and 2 use node-pkginfo and node-asana-api at their last release; neither has been modernized, so ground truth is the assertions, not a reference diff. Iteration 1 (2026-11-10, one run per configuration): eval 0 did not discriminate, the baseline scored 7/7. The difference that mattered on eval 1 was whether the type gate was real, which is now an assertion. After iteration 1 the owner clarified that revival is the point of the skill: both asana runs had recommended deprecation, so the skill and eval 2 now treat that as a failure.",
   "evals": [
     {
       "id": 0,
@@ -91,12 +91,12 @@
     {
       "id": 2,
       "name": "plan-asana-api",
-      "prompt": "ok so node-asana-api. I wrote this client in 2012 against Asana's 1.0 REST API and last touched it in 2015. Someone opened an issue asking if it's maintained. Before I spend a weekend on it: what would it actually take to bring it back, and is it worth doing? Plan only please, don't change any files.",
-      "expected_output": "A plan, not a diff. It sizes the revival and says why, addresses whether the package should be revived at all (Asana ships an official Node client; `request` is deprecated; the tests need live credentials), names how behaviour would be pinned given tests that need a real API token, lists the breaking changes as a table before any work, and gives a recommendation. No files are changed.",
+      "prompt": "ok so node-asana-api. I wrote this client in 2012 against Asana's 1.0 REST API and last touched it in 2015. Someone opened an issue asking if it's maintained, and I want to bring it back. Before I spend a weekend on it: what would it actually take? Plan only please, don't change any files.",
+      "expected_output": "A plan for the revival, not a diff and not a recommendation to deprecate. It sizes the revival and says why, says in a line what else exists (Asana ships an official Node client) and how the revived package will differ, names how behaviour would be pinned given tests that need a real API token, lists the breaking changes as a table before any work, and replaces the deprecated `request`. No files are changed.",
       "files": [],
       "assertions": [
         {
-          "text": "Gives an explicit recommendation on whether the revival is worth doing, considering that an official Asana client exists",
+          "text": "Plans the revival and does not recommend deprecating or archiving the package instead; any mention of the official client is brief and says how this package will differ",
           "kind": "verdict"
         },
         {
