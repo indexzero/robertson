@@ -238,8 +238,12 @@ def lint(snapshot, text):
         return ["Use <title>, one blank line, then <body>"]
     subject = re.fullmatch(r"([^\s:]+): ([a-z].*)", title)
     paths = {f["filename"] for f in snapshot["files"] if f["status"] != "removed"}
-    if not subject or subject[1] not in paths:
-        errors.append("Subject must name an exact changed file, then ': ' and a lowercase verb")
+    prefix = subject[1] if subject else ""
+    # a directory prefix like doc/ names a change that spans two or more of its files
+    spans = prefix.endswith("/") and sum(path.startswith(prefix) for path in paths) >= 2
+    if not subject or not (prefix in paths or spans):
+        errors.append("Subject must name an exact changed file, or a directory/ with two or more "
+                      "changed files, then ': ' and a lowercase verb")
     if title.endswith(".") or re.search(r"\(#\d+\)", title):
         errors.append("Subject must have no final period or PR-number suffix")
     for index, line in enumerate(text.splitlines(), 1):

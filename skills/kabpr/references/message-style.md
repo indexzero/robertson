@@ -54,6 +54,10 @@ failures.
   Name the behavior directly. Do not add an `Update` prefix.
 - The most salient file is the one whose new behavior is the point of the
   PR. It is usually not a test, a fixture, a lockfile, or a doc.
+- When the point of the PR spans two or more changed files in one
+  directory, such as two new docs, name that directory with its trailing
+  slash instead: `doc/: describe ...`. Use the exact file path when only
+  one file there changed.
 - No final period, no parenthetical, no PR number. GitHub appends `(#N)`.
 - 72 columns or fewer. When the path is long, choose a shorter, exact verb
   phrase.
@@ -124,7 +128,8 @@ Assisted-by: <model display name>, <harness>@<version>
 Check each draft before you show it:
 
 1. The subject starts with the exact repository path of the most salient
-   file, followed by `: ` and an imperative behavior phrase. It has no
+   file, or of a directory with two or more changed files, followed by
+   `: ` and an imperative behavior phrase. It has no
    `Update` prefix and is 72 columns or fewer.
 2. The description opens with the problem paragraph. A fenced block of
    3 to 10 verified lines follows, with no test runner or type check in

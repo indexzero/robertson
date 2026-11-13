@@ -18,7 +18,7 @@
           "kind": "safety"
         },
         {
-          "text": "Subject starts with the exact repository path of the most salient file and a colon, followed by a lowercase imperative verb. It has no Update prefix, final period, or planning marker",
+          "text": "Subject starts with the exact repository path of the most salient file, or of a directory/ with two or more changed files, and a colon, followed by a lowercase imperative verb. It has no Update prefix, final period, or planning marker",
           "kind": "format"
         },
         {

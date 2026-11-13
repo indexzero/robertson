@@ -237,6 +237,16 @@ class PreparationTests(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertTrue(p.lint(self.snapshot, text))
 
+    def test_directory_prefix_needs_two_changed_files_under_it(self):
+        snap = copy.deepcopy(self.snapshot)
+        snap["files"] = [{"filename": "doc/CRYPTO.md", "status": "added"},
+                         {"filename": "doc/IMPLEMENTATION.md", "status": "added"},
+                         {"filename": "src/client.py", "status": "modified"}]
+        self.assertEqual(p.lint(snap, MESSAGE.replace("src/client.py:", "doc/:")), [])
+        for prefix in ("doc:", "src/:", "do/:", "/:"):
+            with self.subTest(prefix=prefix):
+                self.assertTrue(p.lint(snap, MESSAGE.replace("src/client.py:", prefix)))
+
     def test_prediction_deduplicates_coauthors_and_reports_append(self):
         self.snapshot["commits"] = [
             {"commit": {"message": "Co-authored-by: First <a@example.com>"}},
