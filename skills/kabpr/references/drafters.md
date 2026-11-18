@@ -15,9 +15,9 @@ The contract: the input is one PR (its title, its description, its diff,
 and its changed files). The output is one message file in the form
 `<title>\n\n<description>`. The ledger `drafted` event names the drafter.
 
-## `claude` (default)
+## `session` (default)
 
-The session model writes the draft from the PR and from
+The current session model writes the draft from the PR and from
 [message-style.md](message-style.md). Read the diff when the description is
 thin or when the code snippet needs a line from it.
 

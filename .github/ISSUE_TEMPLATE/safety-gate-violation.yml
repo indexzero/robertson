@@ -17,7 +17,7 @@ body:
       label: Skill
       options:
         - wt-prune
-        - kabocha
+        - kabpr
         - sandwalk
         - other
     validations:
@@ -76,7 +76,7 @@ body:
     id: ledger
     attributes:
       label: Ledger evidence
-      description: For kabocha, paste the ledger lines for this run. If no line exists, write "no ledger line".
+      description: For kabpr, paste the ledger lines for this run. If no line exists, write "no ledger line".
       render: json
   - type: textarea
     id: recovery
