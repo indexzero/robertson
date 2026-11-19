@@ -28,7 +28,7 @@ you chose.
 | hand-rolled wrapped errors | `new Error(msg, { cause })` | |
 | collecting errors into an array and throwing the first | `AggregateError` | |
 | `Error.prototype.toJSON = ...` or any patch to a built-in prototype | an exported function | Always a breaking change. Callers relied on `JSON.stringify(err)` working. |
-| `function (err, result)` callbacks | `async` functions | Keeping a callback overload alongside the promise form is legitimate for a heavily used API. A function that is sometimes synchronous and sometimes asynchronous is not: give the synchronous path its own name. |
+| `function (err, result)` callbacks | whatever the owner answered: drop, throw, support both, or keep | Never decide this yourself. For `throw`, one guard at the top of each method: a function in the old callback position raises a `TypeError` naming the promise form. For `support`, one adapter shared by every method. A function that is sometimes synchronous and sometimes asynchronous is a separate problem: give the synchronous path its own name. |
 | the `async` package, `step`, `q`, `bluebird` | `async`/`await`, `Promise.all`, `Promise.allSettled`, `for await` | `Promise.all` over started promises cannot limit concurrency. If the old code used `async.eachLimit`, the replacement must take thunks. |
 | `process.nextTick(fn)` | `queueMicrotask(fn)` | Ordering relative to other queued work differs slightly. Only matters if a test pins it. |
 | `new Buffer(x)` | `Buffer.from(x)`, `Buffer.alloc(n)` | The old form is a security hazard when `x` is a number. |

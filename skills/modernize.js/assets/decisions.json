@@ -1,0 +1,143 @@
+{
+  "//": "The decisions a modernization cannot make from the code. scripts/decisions.mjs fills in `evidence` and `suggested` for one package. The owner answers; the agent does not.",
+  "questions": [
+    {
+      "id": "callbacks",
+      "question": "The public API takes error-first callbacks. What happens to them?",
+      "when": "the survey finds error-first callbacks outside the tests",
+      "options": [
+        { "id": "drop", "label": "Drop", "meaning": "async/await only. A function passed where the callback used to go is ignored. Quiet for a caller who missed the migration." },
+        { "id": "throw", "label": "Throw", "meaning": "async/await only. A function passed where the callback used to go throws a TypeError that names the promise form. Loud." },
+        { "id": "support", "label": "Support both", "meaning": "Return a promise and still honour a trailing callback. Costs an adapter on every method and a union in every signature." },
+        { "id": "keep", "label": "Keep callbacks", "meaning": "Callbacks only, no promises. Rare, and right when callers depend on synchronous-callback timing or the package sits under other callback code." }
+      ]
+    },
+    {
+      "id": "module_system",
+      "question": "Which module system does the package ship?",
+      "options": [
+        { "id": "esm", "label": "ESM only", "meaning": "One build. CommonJS callers load it through require() of an ES module on current Node." },
+        { "id": "dual", "label": "Dual", "meaning": "ESM and CommonJS builds. The owner names the build tool.", "needs": "tooling" },
+        { "id": "cjs", "label": "CommonJS only", "meaning": "Stay on CommonJS and modernize everything else." }
+      ]
+    },
+    {
+      "id": "engines",
+      "question": "What is the Node.js floor?",
+      "note": "Only release lines supported on the day of the work are offered. Look them up in the Node.js release schedule. A floor on an unsupported line is refused.",
+      "options": [
+        { "id": "oldest-supported", "label": "Oldest supported line", "meaning": "Widest reach. That line may leave maintenance during this major." },
+        { "id": "active-lts", "label": "Active LTS", "meaning": "Supported for the likely life of this major." },
+        { "id": "current", "label": "Current", "meaning": "Newest features, narrowest reach." }
+      ]
+    },
+    {
+      "id": "types",
+      "question": "How is the package typed?",
+      "options": [
+        { "id": "jsdoc-generated", "label": "JSDoc, declarations generated", "meaning": "JavaScript source, checked JSDoc, .d.ts emitted at publish. One source of truth." },
+        { "id": "jsdoc-checked", "label": "JSDoc, checked only", "meaning": "JSDoc is typechecked in CI and no declarations ship." },
+        { "id": "handwritten", "label": "Hand-written .d.ts", "meaning": "Declarations beside the source, with the conformance gates in references/type-gates.md." },
+        { "id": "typescript", "label": "Migrate to TypeScript", "meaning": "Source becomes .ts. The owner names how it is built or run.", "needs": "tooling" },
+        { "id": "none", "label": "No types", "meaning": "Leave types to DefinitelyTyped or to nobody." }
+      ]
+    },
+    {
+      "id": "package_manager",
+      "question": "Which package manager?",
+      "options": [
+        { "id": "pnpm", "label": "pnpm" },
+        { "id": "npm", "label": "npm" },
+        { "id": "yarn", "label": "yarn" },
+        { "id": "other", "label": "Other", "needs": "name" }
+      ]
+    },
+    {
+      "id": "lint",
+      "question": "Which linter and formatter?",
+      "options": [
+        { "id": "biome", "label": "Biome", "meaning": "Lint and format in one tool." },
+        { "id": "oxlint", "label": "oxlint", "meaning": "Lint only. The owner names a formatter or goes without." },
+        { "id": "eslint-prettier", "label": "ESLint and Prettier" },
+        { "id": "standard", "label": "standard" },
+        { "id": "existing", "label": "Keep what is there" },
+        { "id": "other", "label": "Other", "needs": "name" }
+      ]
+    },
+    {
+      "id": "test_runner",
+      "question": "Which test runner?",
+      "options": [
+        { "id": "node-test", "label": "node:test", "meaning": "No dependency." },
+        { "id": "vitest", "label": "Vitest" },
+        { "id": "existing", "label": "Keep what is there", "meaning": "Only offered when the current runner is maintained." },
+        { "id": "other", "label": "Other", "needs": "name" }
+      ]
+    },
+    {
+      "id": "runtimes",
+      "question": "Which runtimes must it run on?",
+      "options": [
+        { "id": "node", "label": "Node.js only" },
+        { "id": "node-bun-deno", "label": "Node.js, Bun and Deno", "meaning": "No Node-only APIs without a guard. CI runs each." },
+        { "id": "universal", "label": "Servers and browsers", "meaning": "No node: imports in the entry graph." }
+      ]
+    },
+    {
+      "id": "dependencies",
+      "question": "What happens to dependencies the platform has absorbed?",
+      "when": "the survey finds superseded dependencies",
+      "options": [
+        { "id": "replace", "label": "Replace with built-ins", "meaning": "The helpers they provided become this package's code and need tests." },
+        { "id": "upgrade", "label": "Upgrade in place", "meaning": "Keep each one, on its current major." },
+        { "id": "per-dependency", "label": "Decide one by one", "needs": "list" }
+      ]
+    },
+    {
+      "id": "known_defects",
+      "question": "The baseline found defects in the old version. Fix them in this major?",
+      "when": "Step 1 pinned behaviour that is plainly a bug",
+      "options": [
+        { "id": "fix", "label": "Fix and list them", "meaning": "Each is a row in the migration guide." },
+        { "id": "preserve", "label": "Preserve", "meaning": "Bug-for-bug. Fixes come in a later release." },
+        { "id": "per-defect", "label": "Decide one by one", "needs": "list" }
+      ]
+    },
+    {
+      "id": "scope",
+      "question": "May the modernization add API?",
+      "options": [
+        { "id": "parity", "label": "Parity only", "meaning": "The old surface in the new dialect. Nothing new." },
+        { "id": "language-caught-up", "label": "Only where the language caught up", "meaning": "New API when a language feature changes what the package is for." },
+        { "id": "open", "label": "Owner lists additions", "needs": "list" }
+      ]
+    },
+    {
+      "id": "deep_imports",
+      "question": "Callers could import any file. What stays importable?",
+      "options": [
+        { "id": "closed", "label": "Entry points only", "meaning": "An exports map with the documented entries. Deep imports throw." },
+        { "id": "subpaths", "label": "Keep the old paths", "meaning": "An exports subpath for each file callers are known to import." },
+        { "id": "open", "label": "No exports map", "meaning": "Everything stays importable." }
+      ]
+    },
+    {
+      "id": "release",
+      "question": "How does the result ship?",
+      "options": [
+        { "id": "prepare-only", "label": "Prepare, do not release", "meaning": "Version commit and instructions. The owner tags and publishes." },
+        { "id": "prerelease", "label": "Prerelease first", "meaning": "Publish under a `next` tag before `latest`." },
+        { "id": "existing", "label": "Use the repository's release tooling", "needs": "name" }
+      ]
+    },
+    {
+      "id": "old_major",
+      "question": "Does the previous major keep getting fixes?",
+      "options": [
+        { "id": "frozen", "label": "No", "meaning": "The old major is done. Say so in the README." },
+        { "id": "security", "label": "Security fixes only", "meaning": "Keep a maintenance branch." },
+        { "id": "deprecate", "label": "Deprecate it on the registry", "meaning": "With a pointer to the new major." }
+      ]
+    }
+  ]
+}

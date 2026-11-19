@@ -79,6 +79,36 @@ for dependents and weekly downloads, and search for the most common import
 shapes. Callers who deep-import `pkg/lib/thing.js` are part of the API whether
 or not anyone meant them to be.
 
+## Ask the owner
+
+Some choices cannot be read from the code, and a maintainer will rightly
+call the result slop if an agent makes them silently. Whether callbacks
+survive is the plainest case: nearly all legacy JavaScript is callback
+based, and dropping them, throwing on them, supporting both, or keeping
+them are four different packages.
+
+```bash
+node <skill-dir>/scripts/decisions.mjs <package-dir>
+```
+
+It prints each question from [assets/decisions.json](assets/decisions.json)
+with its options, whether it applies to this package, the evidence the
+survey found, and a suggestion where the evidence supports one. Before you
+ask, add what the script cannot see: dependents, downloads, the deep imports
+callers use, and the supported Node.js lines by number.
+
+Put the questions that apply to the owner in one batch, each with its
+evidence. Do not ask what the request already answered. Record the answers
+and work from them: they decide Steps 2 to 6, and a principle elsewhere in
+this skill never overrides one.
+
+- A question with no suggestion, such as callbacks, has no default. Get an
+  answer.
+- With nobody to ask, take the suggestions, stop before any question that
+  has none, and open the report with every choice made on the owner's
+  behalf, marked unconfirmed.
+- `known_defects` can only be asked after Step 1 has found the defects.
+
 ## Step 1: Pin the old behaviour
 
 Do this before any modernizing edit. Once the source has changed, the only
@@ -111,10 +141,11 @@ and writing it first stops a break from happening by accident.
 Typical rows: the engines floor, the module system, removed global patches,
 removed dependencies on dead packages, renamed or relocated entry points.
 
-Prefer a break that fails loudly to one that fails quietly. A removed export
-throws at import. A function that silently changed its return shape does not.
-When a quiet failure is unavoidable, the migration guide says exactly what to
-grep for.
+For each row, say how a missed migration fails: loudly, as a removed export
+throws at import, or quietly, as a function that changed its return shape
+does not. Where the owner chose between the two, as with callbacks, the row
+follows the answer. Where nobody was asked, prefer loud. For every quiet
+row the migration guide says exactly what to grep for.
 
 With `plan`, stop here and present the size, the baseline, and this list.
 
@@ -123,15 +154,15 @@ With `plan`, stop here and present the size, the baseline, and this list.
 Read [references/idioms.md](references/idioms.md) for the old-to-new table
 and the `package.json` shape. The principles behind it:
 
-- **ESM only, no dual build.** Current Node can `require()` a synchronous ESM
-  graph, so ESM-only no longer strands CommonJS callers, provided the entry
-  graph has no top-level `await`. Confirm this against the Node documentation
-  for the floor you chose. A dual build doubles the surface for one release
-  line's benefit.
-- **Set the engines floor from the release schedule, not from memory.** Look
-  up which lines are in maintenance today. Choose the oldest line that will
-  still be supported for the life of this major. The CI matrix is exactly the
-  lines `engines` admits: a floor you do not test is a guess.
+- **The module system is the owner's answer.** If it is ESM only: current
+  Node can `require()` a synchronous ESM graph, so CommonJS callers are not
+  stranded, provided the entry graph has no top-level `await`. Confirm this
+  against the Node documentation for the floor. If it is dual, build both
+  from one source with the tool the owner named, and test both entries.
+- **The engines floor is a supported line, looked up, not remembered.**
+  Refuse a floor on a line that has left maintenance. The CI matrix is
+  exactly the supported lines `engines` admits: a floor you do not test is
+  a guess.
 - **State the floor once.** It appears in `engines`, the CI matrix, the
   README, and the migration guide, and those drift apart within a single
   sitting.
@@ -182,13 +213,15 @@ drift that even those miss.
 
 ## Step 6: Add API only where the language caught up
 
-A modernization is a tempting moment to redesign. Resist everything except
+Only when the owner's answer on scope allows it. A modernization is a
+tempting moment to redesign. Resist everything except
 the cases where a language feature changes what the package is *for*, as
 `AggregateError` and `Error.cause` do for an error library.
 
-- **Additive first.** Old call shapes keep working. A JavaScript array can
-  carry named properties, so one return value can be read the new way and the
-  old way.
+- **Additive first, for what is new.** A new return shape should not break
+  the old reading: a JavaScript array can carry named properties, so one
+  value can be read both ways. This is about API you add. It is not a reason
+  to keep a calling convention the owner chose to drop.
 - **Rename with aliases** and a table: old name, new name, the major that
   removes it.
 - **Warn once** for a call shape that still works but cannot honour new
@@ -281,6 +314,7 @@ Follow the repository's existing commit style and its attribution rules.
 End with what a maintainer needs in order to decide:
 
 - the size chosen and why;
+- the owner's decisions, and any taken on their behalf, marked unconfirmed;
 - the breaking changes, as the Step 2 table;
 - what the baseline showed, including failures that pre-date your work;
 - each gate, and whether you watched it fail;
