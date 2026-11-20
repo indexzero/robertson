@@ -1,0 +1,14 @@
+{
+  "description": "A JavaScript library: spec/ is built from schema/, test/vectors.json is generated",
+  "rules": [
+    { "group": "docs", "patterns": ["README.md", "doc/**"] },
+    { "group": "generated", "patterns": ["spec/**", "test/vectors.json", "package.json", "package-lock.json", "**/*.lock"] },
+    { "group": "code", "patterns": ["index.js", "lib/**", "schema/**", "scripts/**"] },
+    { "group": "tests", "patterns": ["test/*.js", "test/helpers/*.js"] }
+  ],
+  "comment_prefixes": [
+    { "patterns": ["**/*.js"], "prefixes": ["//"] }
+  ],
+  "test_call_regex": "(^|[^.A-Za-z_])test(\\.solo|\\.skip|\\.todo)?\\(",
+  "test_count_regex": "# tests = (\\d+)"
+}
